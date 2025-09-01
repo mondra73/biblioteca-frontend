@@ -462,6 +462,8 @@ const fetchBooks = async (page = 1) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
+    console.log('🔑 Token being sent:', token)
+
     const response = await fetch(`/api/admin/user/libros?page=${page}`, {
       headers: {
         'auth-token': token,
@@ -469,26 +471,19 @@ const fetchBooks = async (page = 1) => {
       }
     })
 
-    // PRIMERO: Guardar la respuesta como texto para debuggear
     const responseText = await response.text()
+    console.log('📊 Response status:', response.status)
+    console.log('📝 Response text:', responseText)
 
-    // MOSTRAR el error en la página para que lo veas en producción
-    error.value = `Response: ${response.status} - ${responseText.substring(0, 100)}...`
-
-    console.log('Status:', response.status)
-    console.log('Response text:', responseText)
-
-    // Intentar parsear como JSON
     let data
     try {
       data = JSON.parse(responseText)
     } catch (parseError) {
-      console.error('JSON parse error:', parseError)
-      throw new Error(`El servidor devolvió HTML en lugar de JSON. Status: ${response.status}`)
+      throw new Error('Invalid JSON response: ' + responseText.substring(0, 100))
     }
 
     if (!response.ok) {
-      throw new Error(data.mensaje || data.error || `Error ${response.status}`)
+      throw new Error(data.error || data.mensaje || `Error ${response.status}`)
     }
 
     books.value = data.libros
@@ -499,14 +494,13 @@ const fetchBooks = async (page = 1) => {
     calculateStats(data.libros)
 
   } catch (err) {
-    error.value = err.message
-    console.error('Error fetching books:', err)
+    error.value = 'Error de autenticación: ' + err.message
+    console.error('Error:', err)
 
-    // Mostrar el error completo en la página
-    error.value = `Error: ${err.message} - Puede ser problema de autenticación o del servidor.`
-
-    if (err.message.includes('token') || err.message.includes('401') || err.message.includes('403')) {
+    if (err.message.includes('denegado') || err.message.includes('token') || response?.status === 401) {
       authStore.logout()
+      // Redirigir al login
+      window.location.href = '/login'
     }
   } finally {
     loading.value = false
