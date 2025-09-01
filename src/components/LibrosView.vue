@@ -462,30 +462,45 @@ const fetchBooks = async (page = 1) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
-    console.log('🔑 Token being sent:', token)
+    // Usar la variable de entorno VITE_API_BASE
+    const API_BASE = import.meta.env.VITE_API_BASE || ''
+    console.log('🔍 API Base:', API_BASE)
+    console.log('🔍 Token:', token ? 'Presente' : 'Faltante')
 
-    const response = await fetch(`/api/admin/user/libros?page=${page}`, {
+    const response = await fetch(`${API_BASE}/api/admin/user/libros?page=${page}`, {
       headers: {
         'auth-token': token,
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      },
+      cache: 'no-store'
     })
 
+    // Leer la respuesta como texto primero
     const responseText = await response.text()
     console.log('📊 Response status:', response.status)
-    console.log('📝 Response text:', responseText)
+    console.log('📝 Response text (inicio):', responseText.substring(0, 200))
 
+    // Verificar si es HTML (error)
+    if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+      console.error('❌ El servidor devolvió HTML en lugar de JSON')
+      throw new Error('Error del servidor: respuesta en formato incorrecto. Status: ' + response.status)
+    }
+
+    // Intentar parsear como JSON
     let data
     try {
       data = JSON.parse(responseText)
     } catch (parseError) {
-      throw new Error('Invalid JSON response: ' + responseText.substring(0, 100))
+      console.error('❌ Error parseando JSON:', parseError)
+      throw new Error('Respuesta del servidor en formato inválido: ' + responseText.substring(0, 100))
     }
 
     if (!response.ok) {
-      throw new Error(data.error || data.mensaje || `Error ${response.status}`)
+      throw new Error(data.error || data.mensaje || `Error ${response.status}: ${response.statusText}`)
     }
 
+    // Éxito - procesar datos
     books.value = data.libros
     pagination.currentPage = data.currentPage
     pagination.totalPages = data.totalPages
@@ -494,13 +509,17 @@ const fetchBooks = async (page = 1) => {
     calculateStats(data.libros)
 
   } catch (err) {
-    error.value = 'Error de autenticación: ' + err.message
-    console.error('Error:', err)
+    error.value = err.message
+    console.error('❌ Error fetching books:', err)
 
-    if (err.message.includes('denegado') || err.message.includes('token') || response?.status === 401) {
+    // Manejar errores de autenticación
+    if (err.message.includes('denegado') || err.message.includes('token') ||
+      err.message.includes('401') || err.message.includes('403')) {
       authStore.logout()
-      // Redirigir al login
-      window.location.href = '/login'
+      // Redirigir al login después de un breve delay
+      setTimeout(() => {
+        window.location.href = '/login'
+      }, 1000)
     }
   } finally {
     loading.value = false
