@@ -148,7 +148,7 @@ import api from '../api'; //
 import { useAuthStore } from '../../stores/auth';
 
 const router = useRouter();
-const auth = useAuthStore(); 
+const auth = useAuthStore();
 const email = ref("");
 const password = ref("");
 const rememberMe = ref(false);
@@ -203,10 +203,10 @@ const onSubmit = async () => {
     });
 
     if (response.data.error === null) {
-      
+
       // Pasar la respuesta completa al store
       auth.login(response.data);
-      
+
       // Redirigir a dashboard después de login exitoso
       router.push('/dashboard');
     } else {
