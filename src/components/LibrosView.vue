@@ -470,11 +470,23 @@ const fetchBooks = async (page = 1) => {
       }
     })
 
+    // PRIMERO verificar si la respuesta es OK
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      throw new Error(errorData.mensaje || errorData.error || 'Error al cargar los libros')
+      // Intentar obtener el mensaje de error como texto primero
+      const errorText = await response.text()
+      console.error('Error response text:', errorText)
+
+      // Intentar parsear como JSON si es posible
+      try {
+        const errorData = JSON.parse(errorText)
+        throw new Error(errorData.mensaje || errorData.error || `Error ${response.status}`)
+      } catch {
+        // Si no es JSON, usar el texto plano
+        throw new Error(errorText || `Error ${response.status}: ${response.statusText}`)
+      }
     }
 
+    // SI la respuesta es OK, intentar parsear como JSON
     const data = await response.json()
 
     books.value = data.libros
@@ -487,6 +499,13 @@ const fetchBooks = async (page = 1) => {
   } catch (err) {
     error.value = err.message
     console.error('Error fetching books:', err)
+
+    // Si es error de autenticación, redirigir al login
+    if (err.message.includes('token') || err.message.includes('401') || err.message.includes('403')) {
+      authStore.logout()
+      // Opcional: redirigir al login
+      // router.push('/login')
+    }
   } finally {
     loading.value = false
   }
