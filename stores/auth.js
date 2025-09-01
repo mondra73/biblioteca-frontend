@@ -1,27 +1,30 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { jwtDecode } from 'jwt-decode' // Importa jwt-decode
+import { ref, computed } from 'vue'
+import { jwtDecode } from 'jwt-decode'
 
 export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
   const userData = ref(null)
 
+  // Getter para obtener el token
+  const token = computed(() => {
+    return localStorage.getItem('auth-token')
+  })
+
   const checkAuth = () => {
-    const token = localStorage.getItem('auth-token')
-    
-    if (token) {
+    const storedToken = localStorage.getItem('auth-token')
+
+    if (storedToken) {
       isAuthenticated.value = true
-      
-      // Decodificar el token para obtener los datos del usuario
+
       try {
-        const decodedToken = jwtDecode(token)
+        const decodedToken = jwtDecode(storedToken)
         userData.value = {
           name: decodedToken.name,
-          id: decodedToken.id
+          id: decodedToken.id,
         }
       } catch (error) {
         console.error('Error decodificando el token:', error)
-        // Limpiar token inválido
         localStorage.removeItem('auth-token')
         isAuthenticated.value = false
         userData.value = null
@@ -34,21 +37,20 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = (responseData) => {
     if (responseData && responseData.data && responseData.data.token) {
-      const token = responseData.data.token
-      
-      localStorage.setItem('auth-token', token)
-      
-      // Decodificar el token inmediatamente después del login
+      const newToken = responseData.data.token
+
+      localStorage.setItem('auth-token', newToken)
+
       try {
-        const decodedToken = jwtDecode(token)
+        const decodedToken = jwtDecode(newToken)
         userData.value = {
           name: decodedToken.name,
-          id: decodedToken.id
+          id: decodedToken.id,
         }
       } catch (error) {
         console.error('Error decodificando el token:', error)
       }
-      
+
       isAuthenticated.value = true
     } else {
       console.error('No se encontró token en la respuesta:', responseData)
@@ -67,8 +69,9 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     isAuthenticated,
     userData,
+    token, // Exportar el getter del token
     checkAuth,
     login,
-    logout
+    logout,
   }
 })
