@@ -59,9 +59,32 @@
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </div>
-            <input v-model="searchQuery" type="text" placeholder="Buscar libros por nombre..."
-              class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary focus:border-primary">
+            <input v-model="searchQuery" type="text" placeholder="Buscar libros por título, autor, género..."
+              class="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary focus:border-primary">
+            <!-- Botón para limpiar búsqueda -->
+            <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <button @click="clearSearch" class="text-gray-400 hover:text-gray-600" type="button">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
           </div>
+
+          <!-- Indicador de búsqueda -->
+          <div v-if="isSearching && searchQuery" class="mt-2 text-sm text-gray-500">
+            Buscando: "{{ searchQuery }}"
+            <span v-if="pagination.totalLibros > 0"> - {{ pagination.totalLibros }} resultado(s) encontrado(s)</span>
+          </div>
+        </div>
+
+        <!-- Mensaje de resultados de búsqueda -->
+        <div v-if="isSearching && pagination.totalLibros === 0 && !loading"
+          class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-blue-800">No se encontraron libros que coincidan con "{{ searchQuery }}"</p>
+          <button @click="clearSearch" class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium">
+            Ver todos los libros
+          </button>
         </div>
 
         <!-- Stats -->
@@ -309,7 +332,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 
 // Estado reactivo
@@ -328,6 +351,7 @@ const loadingSubmit = ref(false)
 const formError = ref(null)
 const selectedBookId = ref(null)
 const libroAEditar = ref(null)
+const isSearching = ref(false)
 
 // Datos de libros desde el backend
 const books = ref([])
@@ -363,24 +387,76 @@ const stats = reactive({
 
 // Computed: Filtrar libros según búsqueda
 const filteredBooks = computed(() => {
-  if (!searchQuery.value) {
-    return books.value
-  }
-
-  const query = searchQuery.value.toLowerCase()
-  return books.value.filter(book =>
-    book.titulo.toLowerCase().includes(query) ||
-    book.autor.toLowerCase().includes(query)
-  )
+  return books.value
 })
 
+let searchTimeout = null
+
 // Métodos
+const performSearch = async (texto, page = 1) => {
+  try {
+    loading.value = true
+    isSearching.value = true
+    error.value = null
+
+    const token = authStore.token
+
+    if (!token) {
+      throw new Error('No hay token de autenticación disponible')
+    }
+
+    // Reemplazar espacios con guiones bajos para la URL
+    const textoCodificado = texto.replace(/ /g, '_')
+
+    const response = await fetch(`/api/admin/user/libro/buscar/${textoCodificado}?page=${page}`, {
+      headers: {
+        'auth-token': token,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+
+      // Si no hay resultados, es normal, no es un error
+      if (response.status === 404 && errorData.mensaje?.includes('No se encontraron')) {
+        books.value = []
+        pagination.totalLibros = 0
+        pagination.totalPages = 0
+        pagination.currentPage = 1
+        calculateStats([])
+        return
+      }
+
+      throw new Error(errorData.mensaje || errorData.error || 'Error en la búsqueda')
+    }
+
+    const data = await response.json()
+
+    books.value = data.libros
+    pagination.currentPage = data.currentPage
+    pagination.totalPages = data.totalPages
+    pagination.totalLibros = data.totalLibros
+
+    calculateStats(data.libros)
+
+  } catch (err) {
+    // No mostrar error si es que no hay resultados
+    if (!err.message.includes('No se encontraron')) {
+      error.value = err.message
+    }
+    console.error('Error en búsqueda:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
 const fetchBooks = async (page = 1) => {
   try {
     loading.value = true
+    isSearching.value = false
     error.value = null
 
-    // Obtener el token del store
     const token = authStore.token
 
     if (!token) {
@@ -396,7 +472,6 @@ const fetchBooks = async (page = 1) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
-      console.log('Error data:', errorData)
       throw new Error(errorData.mensaje || errorData.error || 'Error al cargar los libros')
     }
 
@@ -412,13 +487,6 @@ const fetchBooks = async (page = 1) => {
   } catch (err) {
     error.value = err.message
     console.error('Error fetching books:', err)
-
-    // Si el error es de token, redirigir al login
-    if (err.message.includes('token') || err.message.includes('autenticación')) {
-      authStore.logout()
-      // Opcional: redirigir al login
-      // window.location.href = '/login'
-    }
   } finally {
     loading.value = false
   }
@@ -614,18 +682,46 @@ const openBookMenu = (book) => {
 const changePage = (newPage) => {
   if (newPage >= 1 && newPage <= pagination.totalPages) {
     currentPage.value = newPage
-    fetchBooks(newPage)
+
+    if (isSearching.value && searchQuery.value.trim()) {
+      // Si estamos en modo búsqueda, buscar en la página específica
+      performSearch(searchQuery.value.trim(), newPage)
+    } else {
+      // Si no, cargar página normal
+      fetchBooks(newPage)
+    }
   }
+}
+
+const clearSearch = () => {
+  searchQuery.value = ''
+  isSearching.value = false
+  fetchBooks(1)
 }
 
 onMounted(() => {
   authStore.checkAuth()
-
   if (authStore.isAuthenticated) {
     fetchBooks(1)
   } else {
     error.value = 'No estás autenticado. Por favor inicia sesión.'
   }
+})
+
+watch(searchQuery, (newQuery, oldQuery) => {
+  // Esperar 500ms después de que el usuario deje de escribir
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    if (newQuery.trim() !== oldQuery.trim()) {
+      if (newQuery.trim() === '') {
+        // Si la búsqueda está vacía, cargar libros normales
+        fetchBooks(1)
+      } else {
+        // Si hay texto, realizar búsqueda
+        performSearch(newQuery.trim(), 1)
+      }
+    }
+  }, 500)
 })
 
 </script>
