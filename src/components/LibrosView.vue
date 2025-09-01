@@ -454,7 +454,6 @@ const performSearch = async (texto, page = 1) => {
 const fetchBooks = async (page = 1) => {
   try {
     loading.value = true
-    isSearching.value = false
     error.value = null
 
     const token = authStore.token
@@ -463,6 +462,9 @@ const fetchBooks = async (page = 1) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
+    console.log('🔍 Fetch URL:', `/api/admin/user/libros?page=${page}`)
+    console.log('🔍 Token:', token)
+
     const response = await fetch(`/api/admin/user/libros?page=${page}`, {
       headers: {
         'auth-token': token,
@@ -470,25 +472,33 @@ const fetchBooks = async (page = 1) => {
       }
     })
 
-    // PRIMERO verificar si la respuesta es OK
-    if (!response.ok) {
-      // Intentar obtener el mensaje de error como texto primero
-      const errorText = await response.text()
-      console.error('Error response text:', errorText)
+    console.log('🔍 Response status:', response.status)
+    console.log('🔍 Response headers:', Object.fromEntries([...response.headers]))
 
-      // Intentar parsear como JSON si es posible
-      try {
-        const errorData = JSON.parse(errorText)
-        throw new Error(errorData.mensaje || errorData.error || `Error ${response.status}`)
-      } catch {
-        // Si no es JSON, usar el texto plano
-        throw new Error(errorText || `Error ${response.status}: ${response.statusText}`)
-      }
+    // Leer la respuesta como TEXTO primero para ver qué contiene
+    const responseText = await response.text()
+    console.log('🔍 Response text (primeros 200 caracteres):', responseText.substring(0, 200))
+
+    // Verificar si es HTML (error)
+    if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+      console.error('❌ El backend devolvió HTML en lugar de JSON')
+      throw new Error('Error del servidor: respuesta en formato incorrecto')
     }
 
-    // SI la respuesta es OK, intentar parsear como JSON
-    const data = await response.json()
+    // Si no es HTML, intentar parsear como JSON
+    let data
+    try {
+      data = JSON.parse(responseText)
+    } catch (parseError) {
+      console.error('❌ Error parseando JSON:', parseError)
+      throw new Error('Respuesta del servidor en formato inválido')
+    }
 
+    if (!response.ok) {
+      throw new Error(data.mensaje || data.error || `Error ${response.status}`)
+    }
+
+    // Si llegamos aquí, la respuesta es válida
     books.value = data.libros
     pagination.currentPage = data.currentPage
     pagination.totalPages = data.totalPages
@@ -498,13 +508,11 @@ const fetchBooks = async (page = 1) => {
 
   } catch (err) {
     error.value = err.message
-    console.error('Error fetching books:', err)
+    console.error('❌ Error fetching books:', err)
 
-    // Si es error de autenticación, redirigir al login
+    // Verificar si es error de autenticación
     if (err.message.includes('token') || err.message.includes('401') || err.message.includes('403')) {
       authStore.logout()
-      // Opcional: redirigir al login
-      // router.push('/login')
     }
   } finally {
     loading.value = false
