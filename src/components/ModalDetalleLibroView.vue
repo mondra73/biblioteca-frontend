@@ -145,7 +145,9 @@ const fetchLibroDetalles = async () => {
     error.value = null
 
     const token = authStore.token
-    const response = await fetch(`/api/admin/user/libro/${props.libroId}`, {
+    const API_BASE = import.meta.env.VITE_API_BASE || ''
+
+    const response = await fetch(`${API_BASE}/api/admin/user/libro/${props.libroId}`, {
       headers: {
         'auth-token': token,
         'Content-Type': 'application/json'
