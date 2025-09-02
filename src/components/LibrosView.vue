@@ -407,6 +407,7 @@ const performSearch = async (texto, page = 1) => {
 
     // Reemplazar espacios con guiones bajos para la URL
     const textoCodificado = texto.replace(/ /g, '_')
+    const API_BASE = import.meta.env.VITE_API_BASE || ''
 
     const response = await fetch(`${API_BASE}/api/admin/user/libro/buscar/${textoCodificado}?page=${page}`, {
       headers: {
