@@ -8,6 +8,8 @@ import ModalEditarLibroView from './components/ModalEditarLibroView.vue'
 import ModalConfirmacionView from './components/ModalConfirmacionView.vue'
 import ModalDetallePeliculaView from './components/ModalDetallePeliculaView.vue'
 import ModalEditarPeliculaView from './components/ModalEditarPeliculaView.vue'
+import ModalDetalleSerieView from './components/ModalDetalleSerieView.vue'
+import ModalEditarSerieView from './components/ModalEditarSerieView.vue'
 
 import './assets/main.css'
 
@@ -23,5 +25,7 @@ app.component('ModalEditarLibro', ModalEditarLibroView)
 app.component('ModalConfirmacion', ModalConfirmacionView)
 app.component('ModalDetallePelicula', ModalDetallePeliculaView)
 app.component('ModalEditarPelicula', ModalEditarPeliculaView)
+app.component('ModalDetalleSerie', ModalDetalleSerieView)
+app.component('ModalEditarSerie', ModalEditarSerieView)
 
 app.mount('#app')

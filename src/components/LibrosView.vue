@@ -408,7 +408,7 @@ const performSearch = async (texto, page = 1) => {
     // Reemplazar espacios con guiones bajos para la URL
     const textoCodificado = texto.replace(/ /g, '_')
 
-    const response = await fetch(`/api/admin/user/libro/buscar/${textoCodificado}?page=${page}`, {
+    const response = await fetch(`${API_BASE}/api/admin/user/libro/buscar/${textoCodificado}?page=${page}`, {
       headers: {
         'auth-token': token,
         'Content-Type': 'application/json'
