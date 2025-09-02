@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas - Plataforma de Entretenimiento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        'primary-foreground': '#ffffff',
+                        background: '#ffffff',
+                        foreground: '#0f172a',
+                        card: '#f8fafc',
+                        'card-foreground': '#0f172a',
+                        muted: '#f1f5f9',
+                        'muted-foreground': '#64748b',
+                        border: '#e2e8f0'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="min-h-screen bg-background">
+    <!-- Top Users Rankings -->
+    <section class="px-6 py-12">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex items-center justify-center gap-3 mb-8">
+                <!-- Award Icon -->
+                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <h3 class="text-2xl font-bold text-foreground">Usuarios Líderes</h3>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Top Libros -->
+                <div class="bg-card p-8 rounded-lg border shadow-sm">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <!-- BookOpen Icon -->
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold text-center mb-6">Más Libros Leídos</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-background rounded-md">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                                    1</div>
+                                <span class="font-medium">Marta</span>
+                            </div>
+                            <span class="text-primary font-bold">841</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-background rounded-md">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                                    2</div>
+                                <span class="font-medium">Carlos</span>
+                            </div>
+                            <span class="text-primary font-bold">623</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-background rounded-md">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                                    3</div>
+                                <span class="font-medium">Ana</span>
+                            </div>
+                            <span class="text-primary font-bold">445</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Películas -->
+                <div class="bg-card p-8 rounded-lg border shadow-sm">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <!-- Film Icon -->
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m0 0V1h4a1 1 0 011 1v18a1 1 0 01-1 1H3a1 1 0 01-1-1V2a1 1 0 011-1h4v3m0 0h10M9 7h1m4 0h1m-5.5 5a2.5 2.5 0 105 0 2.5 2.5 0 00-5 0z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold text-center mb-6">Más Películas Vistas</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-background rounded-md">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                                    1</div>
+                                <span class="font-medium">Angelina</span>
+                            </div>
+                            <span class="text-primary font-bold">392</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-background rounded-md">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                                    2</div>
+                                <span class="font-medium">Roberto</span>
+                            </div>
+                            <span class="text-primary font-bold">287</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-background rounded-md">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                                    3</div>
+                                <span class="font-medium">Sofia</span>
+                            </div>
+                            <span class="text-primary font-bold">234</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Series -->
+                <div class="bg-card p-8 rounded-lg border shadow-sm">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <!-- Monitor Icon -->
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold text-center mb-6">Más Series Vistas</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-background rounded-md">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                                    1</div>
+                                <span class="font-medium">Marianela</span>
+                            </div>
+                            <span class="text-primary font-bold">156</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-background rounded-md">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                                    2</div>
+                                <span class="font-medium">Diego</span>
+                            </div>
+                            <span class="text-primary font-bold">134</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-background rounded-md">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                                    3</div>
+                                <span class="font-medium">Laura</span>
+                            </div>
+                            <span class="text-primary font-bold">98</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Personal Statistics -->
+    <section class="px-6 py-16 bg-card">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center justify-center gap-3 mb-8">
+                <!-- BarChart2 Icon -->
+                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <h3 class="text-2xl font-bold text-center text-card-foreground">Mis Estadísticas Personales</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center bg-background p-8 rounded-lg shadow-sm border">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <!-- BookOpen Icon -->
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <div class="text-4xl font-bold text-primary mb-2">72</div>
+                    <div class="text-lg font-medium text-foreground mb-1">Libros Leídos</div>
+                    <div class="text-sm text-muted-foreground">Total acumulado</div>
+                </div>
+
+                <div class="text-center bg-background p-8 rounded-lg shadow-sm border">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <!-- Film Icon -->
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m0 0V1h4a1 1 0 011 1v18a1 1 0 01-1 1H3a1 1 0 01-1-1V2a1 1 0 011-1h4v3m0 0h10M9 7h1m4 0h1m-5.5 5a2.5 2.5 0 105 0 2.5 2.5 0 00-5 0z" />
+                        </svg>
+                    </div>
+                    <div class="text-4xl font-bold text-primary mb-2">45</div>
+                    <div class="text-lg font-medium text-foreground mb-1">Películas Vistas</div>
+                    <div class="text-sm text-muted-foreground">Total acumulado</div>
+                </div>
+
+                <div class="text-center bg-background p-8 rounded-lg shadow-sm border">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <!-- Monitor Icon -->
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div class="text-4xl font-bold text-primary mb-2">23</div>
+                    <div class="text-lg font-medium text-foreground mb-1">Series Vistas</div>
+                    <div class="text-sm text-muted-foreground">Total acumulado</div>
+                </div>
+            </div>
+
+            <!-- Additional Personal Info -->
+            <div class="mt-12 bg-background p-6 rounded-lg border">
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <!-- Users Icon -->
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                    </svg>
+                    <h4 class="text-lg font-semibold text-foreground">Análisis de Rendimiento</h4>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-primary">140</div>
+                        <div class="text-sm text-muted-foreground">Total Consumido</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-primary">12</div>
+                        <div class="text-sm text-muted-foreground">Promedio Mensual</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-primary">Libros</div>
+                        <div class="text-sm text-muted-foreground">Categoría Favorita</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-primary">#15</div>
+                        <div class="text-sm text-muted-foreground">Posición General</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

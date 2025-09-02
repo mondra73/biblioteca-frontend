@@ -595,7 +595,6 @@ const handlePendienteEliminado = () => {
   mostrarExitoEliminacion()
 }
 
-
 const confirmarMarcarCompletado = async () => {
   try {
     loadingAction.value = true
