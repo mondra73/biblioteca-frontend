@@ -679,15 +679,12 @@ const closeModal = () => {
 }
 
 const mostrarConfirmacionCompletado = (item) => {
-  console.log('Item desde MiLista (raw):', item)
 
   // ✅ Normalizar también por si acaso
   const itemNormalizado = {
     ...item,
     id: item.id || item._id
   }
-
-  console.log('Item normalizado:', itemNormalizado)
 
   if (itemNormalizado.confirma) return
   itemAEliminar.value = itemNormalizado
@@ -710,7 +707,6 @@ const resetForm = () => {
 const moverPendienteACompletado = async (item) => {
   try {
     const itemId = item.id || item._id
-    console.log('Moviendo pendiente con ID:', itemId)
 
     const token = authStore.token
     const API_BASE = import.meta.env.VITE_API_BASE || ''
@@ -736,7 +732,6 @@ const moverPendienteACompletado = async (item) => {
       payload.director = item.autorDirector || ''
     }
 
-    console.log('Agregando a:', endpoint, payload)
     const responseCarga = await fetch(`${API_BASE}/api/admin/user${endpoint}`, {
       method: 'POST',
       headers: {
@@ -747,7 +742,6 @@ const moverPendienteACompletado = async (item) => {
     })
 
     const cargaData = await responseCarga.json()
-    console.log('Respuesta carga:', cargaData)
 
     if (!responseCarga.ok) {
       throw new Error(cargaData.mensaje || cargaData.error || 'Error al mover el item')
@@ -755,7 +749,6 @@ const moverPendienteACompletado = async (item) => {
 
     // 2. ✅ INTENTAR eliminar de pendientes, pero si falla no es crítico
     try {
-      console.log('Eliminando pendiente ID:', itemId)
       const responseEliminar = await fetch(`${API_BASE}/api/admin/user/pendiente/${itemId}`, {
         method: 'DELETE',
         headers: {
