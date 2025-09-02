@@ -466,7 +466,7 @@ const fetchPendientes = async (page = 1) => {
   }
 }
 
-const performSearch = async (texto, page = 1) => {
+const performSearch = async (texto) => {
   try {
     loading.value = true
     isSearching.value = true
@@ -589,7 +589,7 @@ const handlePendienteEditado = () => {
   mostrarExitoCreacion()
 }
 
-const handlePendienteEliminado = (pendienteId) => {
+const handlePendienteEliminado = () => {
   fetchPendientes(currentPage.value)
   selectedPendienteId.value = null
   mostrarExitoEliminacion()
