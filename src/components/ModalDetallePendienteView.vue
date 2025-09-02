@@ -1,10 +1,9 @@
 <template>
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-
     <div class="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold text-gray-900">Detalles del Pendiente</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Detalles</h2>
         <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -30,12 +29,15 @@
       <div v-else-if="pendiente" class="space-y-6">
         <!-- Portada y info básica -->
         <div class="flex flex-col md:flex-row gap-6">
-          <!-- Portada -->
-          <div
-            class="w-32 h-40 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <!-- Portada con color según tipo -->
+          <div class="w-32 h-40 rounded-lg flex items-center justify-center flex-shrink-0"
+            :class="getPortadaClass(pendiente.tipo)">
             <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              <path v-if="pendiente.tipo === 'libro'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+              </path>
+              <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 4V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2h4a1 1 0 0 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6H3a1 1 0 1 1 0-2h4Z">
               </path>
             </svg>
           </div>
@@ -43,17 +45,26 @@
           <!-- Información básica -->
           <div class="flex-1">
             <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ pendiente.titulo }}</h3>
-            <p class="text-lg text-gray-600 mb-4">por {{ pendiente.autor }}</p>
 
-            <!-- Prioridad -->
+            <!-- Autor/Director según tipo -->
+            <p class="text-lg text-gray-600 mb-4">
+              {{ pendiente.tipo === 'libro' ? 'Autor' : 'Director' }}:
+              {{ pendiente.autorDirector || 'No especificado' }}
+            </p>
+
+            <!-- Tipo -->
+            <div class="flex items-center mb-4">
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                Tipo: {{ getTipoLabel(pendiente.tipo) }}
+              </span>
+            </div>
+
+            <!-- Estado -->
             <div class="flex items-center mb-4">
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                :class="{
-                  'bg-red-100 text-red-800': pendiente.prioridad === 'alta',
-                  'bg-yellow-100 text-yellow-800': pendiente.prioridad === 'media',
-                  'bg-green-100 text-green-800': pendiente.prioridad === 'baja'
-                }">
-                Prioridad: {{ pendiente.prioridad }}
+                :class="pendiente.confirma ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
+                {{ pendiente.confirma ? 'Completado' : 'Pendiente' }}
               </span>
             </div>
 
@@ -64,16 +75,6 @@
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
               Agregado el {{ formatDate(pendiente.fecha_agregado) }}
-            </div>
-
-            <!-- Género -->
-            <div v-if="pendiente.genero" class="flex items-center text-sm text-gray-500">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                </path>
-              </svg>
-              {{ pendiente.genero }}
             </div>
           </div>
         </div>
@@ -88,20 +89,14 @@
         <div v-else class="border-t pt-6 text-center text-gray-500">
           <p>No hay descripción disponible</p>
         </div>
-
-        <!-- Notas adicionales -->
-        <div v-if="pendiente.notas" class="border-t pt-6">
-          <h4 class="text-lg font-semibold text-gray-900 mb-3">Notas</h4>
-          <p class="text-gray-600 leading-relaxed">{{ pendiente.notas }}</p>
-        </div>
       </div>
 
       <!-- Botones de Acción -->
       <div class="border-t pt-6 flex justify-end space-x-3">
-        <button @click="marcarComoLeido" :disabled="loadingAction"
+        <button @click="marcarComoCompletado" :disabled="loadingAction || pendiente?.confirma"
           class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50">
           <span v-if="loadingAction">Procesando...</span>
-          <span v-else>Marcar como leído</span>
+          <span v-else>{{ pendiente?.confirma ? 'Ya completado' : 'Marcar como completado' }}</span>
         </button>
 
         <button @click="solicitarEliminacion" :disabled="loadingAction"
@@ -119,14 +114,9 @@
   </div>
 
   <!-- Modal de Confirmación para Eliminar -->
-  <ModalConfirmacion v-if="showConfirmacionEliminar" titulo="Eliminar pendiente"
-    mensaje="¿Estás seguro de que quieres eliminar este libro de tu lista de pendientes?"
-    @confirmar="confirmarEliminacion" @cancelar="cancelarEliminacion" />
-
-  <!-- Modal de Confirmación para Marcar como Leído -->
-  <ModalConfirmacion v-if="showConfirmacionLeido" titulo="Marcar como leído"
-    mensaje="¿Estás seguro de que quieres marcar este libro como leído? Se moverá a tu biblioteca de libros leídos."
-    @confirmar="confirmarMarcarLeido" @cancelar="cancelarMarcarLeido" />
+  <ModalConfirmacion v-if="showConfirmacionEliminar" titulo="Eliminar item"
+    mensaje="¿Estás seguro de que quieres eliminar este item de tu lista?" @confirmar="confirmarEliminacion"
+    @cancelar="cancelarEliminacion" />
 
 </template>
 
@@ -141,7 +131,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'editar-pendiente', 'pendiente-eliminado', 'pendiente-marcado-leido'])
+const emit = defineEmits(['close', 'editar-pendiente', 'pendiente-eliminado', 'marcar-como-completado'])
 
 const authStore = useAuthStore()
 const pendiente = ref(null)
@@ -149,7 +139,24 @@ const loading = ref(false)
 const loadingAction = ref(false)
 const error = ref(null)
 const showConfirmacionEliminar = ref(false)
-const showConfirmacionLeido = ref(false)
+
+const getPortadaClass = (tipo) => {
+  const classes = {
+    libro: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+    serie: 'bg-gradient-to-br from-purple-500 to-pink-600',
+    pelicula: 'bg-gradient-to-br from-red-500 to-orange-600'
+  }
+  return classes[tipo] || 'bg-gradient-to-br from-gray-500 to-gray-600'
+}
+
+const getTipoLabel = (tipo) => {
+  const labels = {
+    libro: 'Libro',
+    serie: 'Serie',
+    pelicula: 'Película'
+  }
+  return labels[tipo] || 'Item'
+}
 
 const fetchPendienteDetalles = async () => {
   try {
@@ -167,13 +174,13 @@ const fetchPendienteDetalles = async () => {
     })
 
     if (!response.ok) {
-      throw new Error('Error al cargar los detalles del pendiente')
+      throw new Error('Error al cargar los detalles del item')
     }
 
     pendiente.value = await response.json()
   } catch (err) {
     error.value = err.message
-    console.error('Error fetching pending book details:', err)
+    console.error('Error fetching item details:', err)
   } finally {
     loading.value = false
   }
@@ -188,7 +195,7 @@ const confirmarEliminacion = async () => {
   try {
     loadingAction.value = true
     const token = authStore.token
-    const API_BASE = import.meta.env.VITE_API_BASE || '' 
+    const API_BASE = import.meta.env.VITE_API_BASE || ''
 
     const response = await fetch(`${API_BASE}/api/admin/user/pendiente/${props.pendienteId}`, {
       method: 'DELETE',
@@ -199,7 +206,7 @@ const confirmarEliminacion = async () => {
     })
 
     if (!response.ok) {
-      throw new Error('Error al eliminar el pendiente')
+      throw new Error('Error al eliminar el item')
     }
 
     await response.json()
@@ -208,7 +215,7 @@ const confirmarEliminacion = async () => {
 
   } catch (err) {
     error.value = err.message
-    console.error('Error eliminando pendiente:', err)
+    console.error('Error eliminando item:', err)
   } finally {
     loadingAction.value = false
   }
@@ -218,43 +225,15 @@ const cancelarEliminacion = () => {
   showConfirmacionEliminar.value = false
 }
 
-const marcarComoLeido = () => {
-  showConfirmacionLeido.value = true
-}
-
-const confirmarMarcarLeido = async () => {
-  showConfirmacionLeido.value = false
-  try {
-    loadingAction.value = true
-    const token = authStore.token
-    const API_BASE = import.meta.env.VITE_API_BASE || '' 
-
-    const response = await fetch(`${API_BASE}/api/admin/user/pendiente/${props.pendienteId}/marcar-leido`, {
-      method: 'POST',
-      headers: {
-        'auth-token': token,
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Error al marcar como leído')
+const marcarComoCompletado = () => {
+  if (!pendiente.value?.confirma) {
+    // ✅ Usar _id si id no está disponible
+    const pendienteParaEnviar = {
+      ...pendiente.value,
+      id: pendiente.value.id || pendiente.value._id
     }
-
-    await response.json()
-    emit('pendiente-marcado-leido', props.pendienteId)
-    emit('close')
-
-  } catch (err) {
-    error.value = err.message
-    console.error('Error marcando como leído:', err)
-  } finally {
-    loadingAction.value = false
+    emit('marcar-como-completado', pendienteParaEnviar)
   }
-}
-
-const cancelarMarcarLeido = () => {
-  showConfirmacionLeido.value = false
 }
 
 const abrirEdicion = () => {
@@ -263,6 +242,7 @@ const abrirEdicion = () => {
 }
 
 const formatDate = (dateString) => {
+  if (!dateString) return 'Fecha no disponible'
   const date = new Date(dateString)
   return date.toLocaleDateString('es-ES', {
     day: 'numeric',

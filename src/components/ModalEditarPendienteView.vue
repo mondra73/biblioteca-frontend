@@ -14,7 +14,8 @@
 
           <!-- Autor/Director -->
           <div>
-            <label for="edit-autorDirector" class="block text-sm font-medium text-gray-700 mb-1">Autor/Director *</label>
+            <label for="edit-autorDirector" class="block text-sm font-medium text-gray-700 mb-1">Autor/Director
+              *</label>
             <input v-model="pendienteEditado.autorDirector" type="text" id="edit-autorDirector" required
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
           </div>
@@ -26,18 +27,9 @@
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
               <option value="">Selecciona un tipo</option>
               <option value="libro">Libro</option>
-              <option value="película">Película</option>
+              <option value="pelicula">Película</option> <!-- Cambiado de "película" a "pelicula" -->
               <option value="serie">Serie</option>
             </select>
-          </div>
-
-          <!-- Confirmado -->
-          <div class="flex items-center">
-            <input v-model="pendienteEditado.confirma" type="checkbox" id="edit-confirma"
-              class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-            <label for="edit-confirma" class="ml-2 block text-sm text-gray-700">
-              Confirmado
-            </label>
           </div>
 
           <!-- Descripción -->
@@ -71,8 +63,8 @@
 
   <!-- Modal de Confirmación para Guardar -->
   <ModalConfirmacion v-if="showConfirmacionGuardar" titulo="Guardar cambios"
-    mensaje="¿Estás seguro de que quieres guardar los cambios realizados en este pendiente?" @confirmar="confirmarGuardado"
-    @cancelar="cancelarGuardado" />
+    mensaje="¿Estás seguro de que quieres guardar los cambios realizados en este pendiente?"
+    @confirmar="confirmarGuardado" @cancelar="cancelarGuardado" />
 
 </template>
 
@@ -95,10 +87,9 @@ const error = ref(null)
 const showConfirmacionGuardar = ref(false)
 
 const pendienteEditado = reactive({
-  titulo: props.pendiente.titulo,
-  autorDirector: props.pendiente.autorDirector,
-  tipo: props.pendiente.tipo,
-  confirma: props.pendiente.confirma || false,
+  titulo: props.pendiente.titulo || '',
+  autorDirector: props.pendiente.autorDirector || '',
+  tipo: props.pendiente.tipo || '',
   descripcion: props.pendiente.descripcion || ''
 })
 
@@ -141,7 +132,13 @@ const confirmarGuardado = async () => {
         'auth-token': token,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(pendienteEditado)
+      body: JSON.stringify({
+        titulo: pendienteEditado.titulo,
+        autorDirector: pendienteEditado.autorDirector,
+        tipo: pendienteEditado.tipo,
+        descripcion: pendienteEditado.descripcion
+        // No enviar confirma ya que no se debe editar
+      })
     })
 
     const data = await response.json()
@@ -164,5 +161,4 @@ const confirmarGuardado = async () => {
 const cancelarGuardado = () => {
   showConfirmacionGuardar.value = false
 }
-
 </script>
