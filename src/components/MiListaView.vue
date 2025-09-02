@@ -736,40 +736,65 @@ const submitItemForm = async () => {
   }
 }
 
-const clearSearch = () => {
-  searchTerm.value = ''
-  isSearching.value = false
-  fetchPendientes(1)
-}
+    const changePage = (newPage) => {
+      if (newPage >= 1 && newPage <= pagination.totalPages) {
+        currentPage.value = newPage
 
-onMounted(() => {
-  authStore.checkAuth()
-  if (authStore.isAuthenticated) {
-    fetchPendientes(1)
-  } else {
-    error.value = 'No estás autenticado. Por favor inicia sesión.'
-  }
-})
-
-watch(searchTerm, (newQuery, oldQuery) => {
-  // Esperar 500ms después de que el usuario deje de escribir
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    if (newQuery.trim() !== oldQuery.trim()) {
-      if (newQuery.trim() === '') {
-        // Si la búsqueda está vacía, cargar pendientes normales
-        fetchPendientes(1)
-        isSearching.value = false
-      } else {
-        // Si hay texto, realizar búsqueda
-        performSearch(newQuery.trim(), 1)
+        if (isSearching.value && searchTerm.value.trim()) {
+          // Si estamos en modo búsqueda, buscar en la página específica
+          performSearch(searchTerm.value.trim(), newPage)
+        } else {
+          // Si no, cargar página normal
+          fetchPendientes(newPage)
+        }
       }
     }
-  }, 500)
-})
+
+    const clearSearch = () => {
+      searchTerm.value = ''
+      selectedType.value = ''
+      isSearching.value = false
+      fetchPendientes(1)
+    }
+
+    const editarItem = (item) => {
+      pendienteAEditar.value = item
+    }
+
+    onMounted(() => {
+      authStore.checkAuth()
+      if (authStore.isAuthenticated) {
+        fetchPendientes(1)
+      } else {
+        error.value = 'No estás autenticado. Por favor inicia sesión.'
+      }
+    })
+
+    watch(searchTerm, (newQuery, oldQuery) => {
+      // Esperar 500ms después de que el usuario deje de escribir
+      clearTimeout(searchTimeout)
+      searchTimeout = setTimeout(() => {
+        if (newQuery.trim() !== oldQuery.trim()) {
+          if (newQuery.trim() === '') {
+            // Si la búsqueda está vacía, cargar pendientes normales
+            fetchPendientes(1)
+            isSearching.value = false
+          } else {
+            // Si hay texto, realizar búsqueda
+            performSearch(newQuery.trim(), 1)
+          }
+        }
+      }, 500)
+    })
+
+    watch(selectedType, () => {
+      // Cuando cambia el tipo, no necesitamos hacer una nueva petición al servidor
+      // ya que el filtrado se hace localmente con computed properties
+    })
 
 </script>
 
 <style scoped>
+
 
 </style>
