@@ -176,8 +176,9 @@ const confirmarEliminacion = async () => {
   try {
     loadingAction.value = true
     const token = authStore.token
+    const API_BASE = import.meta.env.VITE_API_BASE || '' 
 
-    const response = await fetch(`/api/admin/user/libro/${props.libroId}`, {
+    const response = await fetch(`${API_BASE}/api/admin/user/libro/${props.libroId}`, {
       method: 'DELETE',
       headers: {
         'auth-token': token,

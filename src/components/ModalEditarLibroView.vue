@@ -156,7 +156,9 @@ const confirmarGuardado = async () => {
     error.value = null
 
     const token = authStore.token
-    const response = await fetch(`/api/admin/user/libro/${props.libro.id}`, {
+    const API_BASE = import.meta.env.VITE_API_BASE || ''
+
+    const response = await fetch(`${API_BASE}/api/admin/user/libro/${props.libro.id}`, {
       method: 'PUT',
       headers: {
         'auth-token': token,
