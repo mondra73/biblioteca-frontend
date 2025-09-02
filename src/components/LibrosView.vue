@@ -464,8 +464,6 @@ const fetchBooks = async (page = 1) => {
 
     // Usar la variable de entorno VITE_API_BASE
     const API_BASE = import.meta.env.VITE_API_BASE || ''
-    console.log('🔍 API Base:', API_BASE)
-    console.log('🔍 Token:', token ? 'Presente' : 'Faltante')
 
     const response = await fetch(`${API_BASE}/api/admin/user/libros?page=${page}`, {
       headers: {
@@ -478,9 +476,7 @@ const fetchBooks = async (page = 1) => {
 
     // Leer la respuesta como texto primero
     const responseText = await response.text()
-    console.log('📊 Response status:', response.status)
-    console.log('📝 Response text (inicio):', responseText.substring(0, 200))
-
+    
     // Verificar si es HTML (error)
     if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
       console.error('❌ El servidor devolvió HTML en lugar de JSON')
