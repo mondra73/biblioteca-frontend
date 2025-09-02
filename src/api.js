@@ -1,15 +1,10 @@
 import axios from 'axios'
 
-// Función para detectar la URL base automáticamente
-const getApiBase = () => {
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return 'http://localhost:3000/api'
-  }
-  return 'https://backbibloteca.onrender.com/api'
-}
+// URL base para API - usa variable de entorno o default
+const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:3000'
 
 const api = axios.create({
-  baseURL: getApiBase(), // ← Usa la detección automática
+  baseURL: `${API_BASE_URL}/api`,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -21,7 +16,6 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth-token')
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`
-    // También agrega el header que espera tu backend
     config.headers['auth-token'] = token
   }
   return config
