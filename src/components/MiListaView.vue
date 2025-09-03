@@ -526,27 +526,42 @@ const getGradientClass = (tipo) => {
 }
 
 const getTipoLabel = (tipo) => {
+  // Normalizar el tipo primero
+  const normalizedTipo = tipo ? tipo.toLowerCase() : ''
+
   const labels = {
     libro: 'Libro',
     serie: 'Serie',
-    pelicula: 'Película'
+    pelicula: 'Película',
+    película: 'Película' // ← Manejar ambas variantes
   }
-  return labels[tipo] || 'Item'
+
+  return labels[normalizedTipo] || 'Item'
 }
 
 const getAutorDirectorLabel = (tipo) => {
-  return tipo === 'libro' ? 'Autor' : 'Director'
+  // Normalizar el tipo primero
+  const normalizedTipo = tipo ? tipo.toLowerCase() : ''
+
+  if (normalizedTipo === 'libro') return 'Autor'
+  if (normalizedTipo === 'pelicula' || normalizedTipo === 'película') return 'Director'
+  if (normalizedTipo === 'serie') return 'Director'
+  return 'Autor/Director' // ← Valor por defecto
 }
 
 const getCompletadoText = (tipo, completado) => {
   if (completado) return 'Completado'
 
+  // Normalizar el tipo primero
+  const normalizedTipo = tipo ? tipo.toLowerCase() : ''
+
   const textos = {
     libro: 'Marcar como leído',
-    serie: 'Marcar como vista',
-    pelicula: 'Marcar como vista'
+    pelicula: 'Marcar como vista',
+    película: 'Marcar como vista',
+    serie: 'Marcar como vista'
   }
-  return textos[tipo] || 'Marcar como completado'
+  return textos[normalizedTipo] || 'Marcar como completado'
 }
 
 // Métodos para mostrar diferentes tipos de éxito
@@ -717,19 +732,34 @@ const moverPendienteACompletado = async (item) => {
       valuacion: null
     }
 
-    if (item.tipo === 'libro') {
-      endpoint = '/carga-libros'  // ← MANTENER así
+    // ✅ NORMALIZAR EL TIPO: convertir a minúscula y manejar variaciones
+    let itemType = item.tipo ? item.tipo.toLowerCase() : ''
+
+    // Mapear variaciones a los valores esperados
+    if (itemType === 'pelicula' || itemType === 'película') {
+      itemType = 'pelicula'
+    } else if (itemType === 'serie') {
+      itemType = 'serie'
+    } else if (itemType === 'libro') {
+      itemType = 'libro'
+    } else {
+      // Si no reconocemos el tipo, usar 'pelicula' como valor por defecto
+      // o podrías lanzar un error según lo que prefieras
+      itemType = 'pelicula'
+    }
+
+    if (itemType === 'libro') {
+      endpoint = '/carga-libros'
       payload.autor = item.autorDirector || ''
       payload.genero = ''
-    } else if (item.tipo === 'pelicula') {
-      endpoint = '/carga-peliculas'  // ← MANTENER así
+    } else if (itemType === 'pelicula') {
+      endpoint = '/carga-peliculas'
       payload.director = item.autorDirector || ''
-    } else if (item.tipo === 'serie') {
-      endpoint = '/carga-series'  // ← MANTENER así
+    } else if (itemType === 'serie') {
+      endpoint = '/carga-series'
       payload.director = item.autorDirector || ''
     }
 
-    // ✅ SOLO CAMBIAR ESTA LÍNEA - usar el mismo patrón que funciona
     const responseCarga = await fetch(`${API_BASE}/api/admin/user${endpoint}`, {
       method: 'POST',
       headers: {
