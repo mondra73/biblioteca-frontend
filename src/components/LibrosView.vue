@@ -96,14 +96,15 @@
                 <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
                   <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477 4.5 1.253">
                     </path>
                   </svg>
                 </div>
               </div>
               <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600">Total Leídos</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ stats.totalRead }}</p>
+                <!-- Mostrar el total real de libros en lugar del paginado -->
+                <p class="text-2xl font-semibold text-gray-900">{{ stats.totalRealLibros || stats.totalRead }}</p>
               </div>
             </div>
           </div>
@@ -279,7 +280,8 @@ const books = ref([])
 const handleLibroAgregado = () => {
   mostrarModalAgregar.value = false
   mostrarExitoCreacion()
-  fetchBooks(currentPage.value) 
+  fetchBooks(currentPage.value)
+  fetchRealStats() // Llamar a fetchRealStats después de agregar un libro
 }
 
 // Fecha actual para limitar el input de fecha
@@ -298,8 +300,42 @@ const pagination = reactive({
 const stats = reactive({
   totalRead: 0,
   thisMonth: 0,
-  averageRating: 0
+  averageRating: 0,
+  totalRealLibros: 0 // Nueva propiedad para el total real de libros
 })
+
+// Función para obtener estadísticas reales
+const fetchRealStats = async () => {
+  try {
+    const token = authStore.token
+
+    if (!token) {
+      return
+    }
+
+    const API_BASE = import.meta.env.VITE_API_BASE || ''
+
+    const response = await fetch(`${API_BASE}/api/admin/user/estadisticas-libros`, {
+      headers: {
+        'auth-token': token,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Error al obtener estadísticas reales')
+    }
+
+    const data = await response.json()
+    
+    // Actualizar el total real de libros
+    stats.totalRealLibros = data.totalLibros
+
+  } catch (err) {
+    console.error('Error fetching real stats:', err)
+    // No mostramos error al usuario para no interrumpir la experiencia
+  }
+}
 
 // Computed: Filtrar libros según búsqueda
 const filteredBooks = computed(() => {
@@ -420,6 +456,9 @@ const fetchBooks = async (page = 1) => {
     pagination.totalLibros = data.totalLibros
 
     calculateStats(data.libros)
+    
+    // Obtener estadísticas reales después de cargar los libros
+    await fetchRealStats()
 
   } catch (err) {
     error.value = err.message
@@ -476,13 +515,14 @@ const handleLibroEditado = () => {
   fetchBooks(currentPage.value)
   libroAEditar.value = null
   mostrarExitoEdicion()
+  fetchRealStats() // Llamar a fetchRealStats después de editar un libro
 }
 
-// En handleLibroEliminado:
 const handleLibroEliminado = (libroId) => {
   fetchBooks(currentPage.value)
   selectedBookId.value = null
-  mostrarExitoEliminacion() // ← Agregado
+  mostrarExitoEliminacion()
+  fetchRealStats() // Llamar a fetchRealStats después de eliminar un libro
 }
 
 const calculateStats = (libros) => {
