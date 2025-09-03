@@ -27,7 +27,7 @@
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
               <option value="">Selecciona un tipo</option>
               <option value="libro">Libro</option>
-              <option value="pelicula">Película</option> <!-- Cambiado de "película" a "pelicula" -->
+              <option value="pelicula">Película</option>
               <option value="serie">Serie</option>
             </select>
           </div>
@@ -89,9 +89,20 @@ const showConfirmacionGuardar = ref(false)
 const pendienteEditado = reactive({
   titulo: props.pendiente.titulo || '',
   autorDirector: props.pendiente.autorDirector || '',
-  tipo: props.pendiente.tipo || '',
+  tipo: normalizeTipo(props.pendiente.tipo) || '', // ← Normalizar al cargar
   descripcion: props.pendiente.descripcion || ''
 })
+
+const normalizeTipo = (tipo) => {
+  if (!tipo) return ''
+
+  const normalized = tipo.toLowerCase()
+  // Mapear variaciones a los valores esperados por el select
+  if (normalized === 'pelicula' || normalized === 'película') {
+    return 'pelicula'
+  }
+  return normalized
+}
 
 const validarFormulario = () => {
   if (!pendienteEditado.titulo.trim()) {
@@ -126,6 +137,9 @@ const confirmarGuardado = async () => {
     const token = authStore.token
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
+    // ✅ Asegurar que el tipo esté normalizado antes de enviar
+    const tipoNormalizado = normalizeTipo(pendienteEditado.tipo)
+
     const response = await fetch(`${API_BASE}/api/admin/user/pendiente/${props.pendiente._id}`, {
       method: 'PUT',
       headers: {
@@ -135,9 +149,8 @@ const confirmarGuardado = async () => {
       body: JSON.stringify({
         titulo: pendienteEditado.titulo,
         autorDirector: pendienteEditado.autorDirector,
-        tipo: pendienteEditado.tipo,
+        tipo: tipoNormalizado, // ← Usar el tipo normalizado
         descripcion: pendienteEditado.descripcion
-        // No enviar confirma ya que no se debe editar
       })
     })
 

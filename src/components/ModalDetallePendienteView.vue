@@ -48,7 +48,7 @@
 
             <!-- Autor/Director según tipo -->
             <p class="text-lg text-gray-600 mb-4">
-              {{ pendiente.tipo === 'libro' ? 'Autor' : 'Director' }}:
+              {{ getAutorDirectorLabel(pendiente.tipo) }}:
               {{ pendiente.autorDirector || 'No especificado' }}
             </p>
 
@@ -141,21 +141,39 @@ const error = ref(null)
 const showConfirmacionEliminar = ref(false)
 
 const getPortadaClass = (tipo) => {
+  // Normalizar el tipo primero
+  const normalizedTipo = tipo ? tipo.toLowerCase() : ''
+
   const classes = {
     libro: 'bg-gradient-to-br from-blue-500 to-indigo-600',
     serie: 'bg-gradient-to-br from-purple-500 to-pink-600',
-    pelicula: 'bg-gradient-to-br from-red-500 to-orange-600'
+    pelicula: 'bg-gradient-to-br from-red-500 to-orange-600',
+    película: 'bg-gradient-to-br from-red-500 to-orange-600'
   }
-  return classes[tipo] || 'bg-gradient-to-br from-gray-500 to-gray-600'
+  return classes[normalizedTipo] || 'bg-gradient-to-br from-gray-500 to-gray-600'
+}
+
+const getAutorDirectorLabel = (tipo) => {
+  // Normalizar el tipo primero
+  const normalizedTipo = tipo ? tipo.toLowerCase() : ''
+
+  if (normalizedTipo === 'libro') return 'Autor'
+  if (normalizedTipo === 'pelicula' || normalizedTipo === 'película') return 'Director'
+  if (normalizedTipo === 'serie') return 'Director'
+  return 'Autor/Director' // ← Valor por defecto
 }
 
 const getTipoLabel = (tipo) => {
+  // Normalizar el tipo primero
+  const normalizedTipo = tipo ? tipo.toLowerCase() : ''
+
   const labels = {
     libro: 'Libro',
     serie: 'Serie',
-    pelicula: 'Película'
+    pelicula: 'Película',
+    película: 'Película'
   }
-  return labels[tipo] || 'Item'
+  return labels[normalizedTipo] || 'Item'
 }
 
 const fetchPendienteDetalles = async () => {
@@ -227,12 +245,13 @@ const cancelarEliminacion = () => {
 
 const marcarComoCompletado = () => {
   if (!pendiente.value?.confirma) {
-    // ✅ Usar _id si id no está disponible
-    const pendienteParaEnviar = {
+    // ✅ Normalizar el tipo antes de enviar
+    const pendienteNormalizado = {
       ...pendiente.value,
-      id: pendiente.value.id || pendiente.value._id
+      id: pendiente.value.id || pendiente.value._id,
+      tipo: pendiente.value.tipo ? pendiente.value.tipo.toLowerCase() : pendiente.value.tipo
     }
-    emit('marcar-como-completado', pendienteParaEnviar)
+    emit('marcar-como-completado', pendienteNormalizado)
   }
 }
 
