@@ -1,14 +1,5 @@
 <template>
   <div class="min-h-screen bg-white flex items-center justify-center px-6 py-12">
-    <!-- Botón volver -->
-    <button
-      class="fixed top-4 left-4 z-50 px-4 py-2 rounded-md flex items-center transition-colors bg-transparent text-gray-900 border-none hover:bg-gray-100"
-      @click="goBack">
-      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-      Volver al inicio
-    </button>
 
     <!-- Card -->
     <div class="w-full max-w-md">
@@ -162,10 +153,6 @@ const errors = ref({
 
 const goToRegister = () => {
   router.push('/register');
-};
-
-const goBack = () => {
-  router.push('/');
 };
 
 const togglePassword = () => {

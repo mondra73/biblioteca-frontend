@@ -10,7 +10,7 @@
         <p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
           Registra, organiza y descubre. La forma más elegante de llevar control de todo lo que ves y lees.
         </p>
-        <button
+        <button @click="redirectToLogin"
           class="bg-primary text-primary-foreground px-8 py-3 text-lg rounded-md font-medium hover:bg-primary/90 transition-colors">
           Comenzar Ahora
         </button>
@@ -104,7 +104,7 @@
             class="bg-primary text-primary-foreground px-8 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors">
             Crear Cuenta
           </button>
-          <button @click="goToLogin"
+          <button @click="redirectToLogin"
             class="border border-border bg-transparent text-foreground px-8 py-3 rounded-md font-medium hover:bg-gray-50 transition-colors">
             Iniciar Sesión
           </button>
@@ -112,33 +112,61 @@
       </div>
     </section>
   </div>
-
 </template>
 
-<script>
+<script setup>
 import { useRouter } from 'vue-router'
 
-export default {
-  name: 'LandingPage',
-  setup() {
-    const router = useRouter()
+const router = useRouter()
 
-    const goToRegister = () => {
-      router.push('/register')
-    }
+const redirectToLogin = () => {
+  router.push('/login')
+}
 
-    const goToLogin = () => {
-      router.push('/login')
-    }
-
-    return {
-      goToRegister,
-      goToLogin
-    }
-  }
+const goToRegister = () => {
+  router.push('/register')
 }
 </script>
 
 <style>
-/* Puedes agregar estilos personalizados aquí si es necesario */
+/* Estilos personalizados para mantener la apariencia */
+.bg-background {
+  background-color: #fff;
+}
+
+.text-foreground {
+  color: #1f2937;
+}
+
+.text-muted-foreground {
+  color: #6b7280;
+}
+
+.bg-card {
+  background-color: #f9fafb;
+}
+
+.text-card-foreground {
+  color: #1f2937;
+}
+
+.border-border {
+  border-color: #e5e7eb;
+}
+
+.bg-primary {
+  background-color: #3b82f6;
+}
+
+.text-primary {
+  color: #3b82f6;
+}
+
+.text-primary-foreground {
+  color: #fff;
+}
+
+.hover\:bg-primary\/90:hover {
+  background-color: #2563eb;
+}
 </style>

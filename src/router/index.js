@@ -8,6 +8,7 @@ import PeliculasView from '../components/PeliculasView.vue'
 import SeriesView from '../components/SeriesView.vue'
 import MiListaView from '../components/MiListaView.vue'
 import EstadisticasView from '../components/EstadisticasView.vue'
+import ContactoView from '../components/ContactoView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +37,7 @@ const router = createRouter({
       component: EstadisticasView,
       meta: { requiresAuth: true },
     },
+    { path: '/contacto', name: 'contacto', component: ContactoView },
   ],
 })
 
