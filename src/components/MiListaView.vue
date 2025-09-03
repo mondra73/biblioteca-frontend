@@ -706,11 +706,9 @@ const resetForm = () => {
 const moverPendienteACompletado = async (item) => {
   try {
     const itemId = item.id || item._id
-
     const token = authStore.token
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
-    // 1. Primero, agregar a la sección correspondiente
     let endpoint = ''
     let payload = {
       fecha: new Date().toISOString().split('T')[0],
@@ -720,17 +718,18 @@ const moverPendienteACompletado = async (item) => {
     }
 
     if (item.tipo === 'libro') {
-      endpoint = '/carga-libros'
+      endpoint = '/carga-libros'  // ← MANTENER así
       payload.autor = item.autorDirector || ''
       payload.genero = ''
     } else if (item.tipo === 'pelicula') {
-      endpoint = '/carga-peliculas'
+      endpoint = '/carga-peliculas'  // ← MANTENER así
       payload.director = item.autorDirector || ''
     } else if (item.tipo === 'serie') {
-      endpoint = '/carga-series'
+      endpoint = '/carga-series'  // ← MANTENER así
       payload.director = item.autorDirector || ''
     }
 
+    // ✅ SOLO CAMBIAR ESTA LÍNEA - usar el mismo patrón que funciona
     const responseCarga = await fetch(`${API_BASE}/api/admin/user${endpoint}`, {
       method: 'POST',
       headers: {
