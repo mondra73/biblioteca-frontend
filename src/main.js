@@ -13,7 +13,7 @@ import ModalEditarSerieView from './components/ModalEditarSerieView.vue'
 import ModalDetallePendienteView from './components/ModalDetallePendienteView.vue'
 import ModalEditarPendienteView from './components/ModalEditarPendienteView.vue'
 import ModalAgregarLibroView from './components/ModalAgregarLibroView.vue'
-import ModaAgregarPeliculaView from './components/ModaAgregarPeliculaView.vue'
+import ModalAgregarPeliculaView from './components/ModalAgregarPeliculaView.vue'
 import ModalAgregarSerieView from './components/ModalAgregarSerieView.vue'
 
 import './assets/main.css'
@@ -35,7 +35,7 @@ app.component('ModalEditarSerie', ModalEditarSerieView)
 app.component('ModalDetallePendiente', ModalDetallePendienteView)
 app.component('ModalEditarPendiente', ModalEditarPendienteView)
 app.component('ModalAgregarLibro', ModalAgregarLibroView)
-app.component('ModalAgregarPelicula', ModaAgregarPeliculaView)
+app.component('ModalAgregarPelicula', ModalAgregarPeliculaView)
 app.component('ModalAgregarSerie', ModalAgregarSerieView)
 
 app.mount('#app')

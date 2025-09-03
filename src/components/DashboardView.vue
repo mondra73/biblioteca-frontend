@@ -300,16 +300,22 @@ const fetchEstadisticas = async () => {
 
 // Función para abrir el formulario correspondiente
 const abrirFormularioAgregar = () => {
+  console.log('=== DEBUG: abrirFormularioAgregar ===')
+  console.log('Tipo seleccionado:', tipoSeleccionado.value)
+  
   mostrarModalAgregar.value = false
   
   switch (tipoSeleccionado.value) {
     case 'libros':
+      console.log('Setting mostrarModalLibro to true')
       mostrarModalLibro.value = true
       break
     case 'peliculas':
+      console.log('Setting mostrarModalPelicula to true')
       mostrarModalPelicula.value = true
       break
     case 'series':
+      console.log('Setting mostrarModalSerie to true')
       mostrarModalSerie.value = true
       break
   }
