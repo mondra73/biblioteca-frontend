@@ -233,11 +233,7 @@
       </div>
     </main>
 
-     <ModalAgregarLibro
-      v-if="mostrarModalAgregar" 
-      @close="mostrarModalAgregar = false" 
-      @success="handleLibroAgregado" 
-    />
+    <ModalAgregarLibro v-if="mostrarModalAgregar" @close="mostrarModalAgregar = false" @success="handleLibroAgregado" />
 
     <!-- Modal de Detalles -->
     <ModalDetalleLibro v-if="selectedBookId" :libroId="selectedBookId" @close="selectedBookId = null"
@@ -258,7 +254,7 @@
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 
-// Estado reactivo
+// Estado reactivo (sin cambios en esta parte)
 const searchQuery = ref('')
 const mostrarModalAgregar = ref(false)
 const showModalExitoView = ref(false)
@@ -277,17 +273,42 @@ const isSearching = ref(false)
 // Datos de libros desde el backend
 const books = ref([])
 
+// Función para decodificar el token JWT y obtener el ID del usuario
+const getUserIdFromToken = () => {
+  try {
+    const token = authStore.token
+    if (!token) {
+      throw new Error('No hay token disponible')
+    }
+
+    // El token JWT tiene el formato: header.payload.signature
+    const payloadBase64 = token.split('.')[1]
+    if (!payloadBase64) {
+      throw new Error('Token con formato inválido')
+    }
+
+    // Decodificar la parte payload del token
+    const payloadJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'))
+    const payload = JSON.parse(payloadJson)
+
+    // Verificar que el payload contiene el ID
+    if (!payload.id) {
+      throw new Error('Token no contiene ID de usuario')
+    }
+
+    return payload.id
+  } catch (err) {
+    console.error('Error decodificando token:', err)
+    throw new Error('No se pudo obtener el ID del usuario desde el token')
+  }
+}
+
 const handleLibroAgregado = () => {
   mostrarModalAgregar.value = false
   mostrarExitoCreacion()
   fetchBooks(currentPage.value)
   fetchRealStats() // Llamar a fetchRealStats después de agregar un libro
 }
-
-// Fecha actual para limitar el input de fecha
-const today = computed(() => {
-  return new Date().toISOString().split('T')[0]
-})
 
 // Paginación
 const pagination = reactive({
@@ -301,17 +322,22 @@ const stats = reactive({
   totalRead: 0,
   thisMonth: 0,
   averageRating: 0,
-  totalRealLibros: 0 // Nueva propiedad para el total real de libros
+  totalRealLibros: 0
 })
 
-// Función para obtener estadísticas reales
+// Función para obtener estadísticas reales - MODIFICADA
 const fetchRealStats = async () => {
   try {
     const token = authStore.token
     if (!token) return
 
+    // Obtener el ID del usuario desde el token
+    const userId = getUserIdFromToken()
+
     const API_BASE = import.meta.env.VITE_API_BASE || ''
-    const response = await fetch(`${API_BASE}/api/admin/user/estadisticas-libros`, {
+
+    // MODIFICADO: Usar el nuevo endpoint con el ID del usuario
+    const response = await fetch(`${API_BASE}/api/admin/user/estadisticas-libros/${userId}`, {
       headers: {
         'auth-token': token,
         'Content-Type': 'application/json'
@@ -321,10 +347,10 @@ const fetchRealStats = async () => {
     if (!response.ok) throw new Error('Error al obtener estadísticas reales')
 
     const data = await response.json()
-    
+
     // Actualizar ambos valores desde el endpoint
     stats.totalRealLibros = data.totalLibros
-    stats.averageRating = data.promedioRating || '0.0' // Usar el promedio real
+    stats.averageRating = data.promedioRating || '0.0'
 
   } catch (err) {
     console.error('Error fetching real stats:', err)
@@ -365,7 +391,6 @@ const performSearch = async (texto, page = 1) => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
 
-      // Si no hay resultados, es normal, no es un error
       if (response.status === 404 && errorData.mensaje?.includes('No se encontraron')) {
         books.value = []
         pagination.totalLibros = 0
@@ -388,7 +413,6 @@ const performSearch = async (texto, page = 1) => {
     calculateStats(data.libros)
 
   } catch (err) {
-    // No mostrar error si es que no hay resultados
     if (!err.message.includes('No se encontraron')) {
       error.value = err.message
     }
@@ -409,7 +433,6 @@ const fetchBooks = async (page = 1) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
-    // Usar la variable de entorno VITE_API_BASE
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
     const response = await fetch(`${API_BASE}/api/admin/user/libros?page=${page}`, {
@@ -421,16 +444,13 @@ const fetchBooks = async (page = 1) => {
       cache: 'no-store'
     })
 
-    // Leer la respuesta como texto primero
     const responseText = await response.text()
 
-    // Verificar si es HTML (error)
     if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
       console.error('❌ El servidor devolvió HTML en lugar de JSON')
       throw new Error('Error del servidor: respuesta en formato incorrecto. Status: ' + response.status)
     }
 
-    // Intentar parsear como JSON
     let data
     try {
       data = JSON.parse(responseText)
@@ -443,26 +463,22 @@ const fetchBooks = async (page = 1) => {
       throw new Error(data.error || data.mensaje || `Error ${response.status}: ${response.statusText}`)
     }
 
-    // Éxito - procesar datos
     books.value = data.libros
     pagination.currentPage = data.currentPage
     pagination.totalPages = data.totalPages
     pagination.totalLibros = data.totalLibros
 
     calculateStats(data.libros)
-    
-    // Obtener estadísticas reales después de cargar los libros
+
     await fetchRealStats()
 
   } catch (err) {
     error.value = err.message
     console.error('❌ Error fetching books:', err)
 
-    // Manejar errores de autenticación
     if (err.message.includes('denegado') || err.message.includes('token') ||
       err.message.includes('401') || err.message.includes('403')) {
       authStore.logout()
-      // Redirigir al login después de un breve delay
       setTimeout(() => {
         window.location.href = '/login'
       }, 1000)
@@ -472,6 +488,7 @@ const fetchBooks = async (page = 1) => {
   }
 }
 
+// Resto de las funciones permanecen iguales...
 const openBookDetails = (book) => {
   selectedBookId.value = book.id
 }
@@ -480,7 +497,6 @@ const abrirEdicion = (libro) => {
   libroAEditar.value = libro
 }
 
-// Métodos para mostrar diferentes tipos de éxito
 const mostrarExitoCreacion = () => {
   modalExitoConfig.value = {
     titulo: 'Libro agregado',
@@ -509,21 +525,19 @@ const handleLibroEditado = () => {
   fetchBooks(currentPage.value)
   libroAEditar.value = null
   mostrarExitoEdicion()
-  fetchRealStats() // Llamar a fetchRealStats después de editar un libro
+  fetchRealStats()
 }
 
 const handleLibroEliminado = (libroId) => {
   fetchBooks(currentPage.value)
   selectedBookId.value = null
   mostrarExitoEliminacion()
-  fetchRealStats() // Llamar a fetchRealStats después de eliminar un libro
+  fetchRealStats()
 }
 
 const calculateStats = (libros) => {
-  // Total de libros leídos
   stats.totalRead = libros.length
 
-  // Libros leídos este mes
   const currentMonth = new Date().getMonth()
   const currentYear = new Date().getFullYear()
   stats.thisMonth = libros.filter(book => {
@@ -531,7 +545,6 @@ const calculateStats = (libros) => {
     return bookDate.getMonth() === currentMonth && bookDate.getFullYear() === currentYear
   }).length
 
-  // Promedio de rating (solo libros con valoración)
   const librosConRating = libros.filter(book => book.valuacion !== null && book.valuacion !== undefined)
   if (librosConRating.length > 0) {
     const totalRating = librosConRating.reduce((sum, book) => sum + book.valuacion, 0)
@@ -551,7 +564,6 @@ const formatDate = (dateString) => {
 }
 
 const getBookGradient = (book) => {
-  // Asignar gradientes basados en el título o autor para consistencia
   const gradients = [
     'from-blue-500 to-purple-600',
     'from-green-500 to-teal-600',
@@ -561,7 +573,6 @@ const getBookGradient = (book) => {
     'from-teal-500 to-cyan-600'
   ]
 
-  // Crear un hash simple basado en el título para asignar colores consistentes
   let hash = 0
   for (let i = 0; i < book.titulo.length; i++) {
     hash = book.titulo.charCodeAt(i) + ((hash << 5) - hash)
@@ -570,10 +581,8 @@ const getBookGradient = (book) => {
   return gradients[Math.abs(hash) % gradients.length]
 }
 
-
 const openBookMenu = (book) => {
   console.log('Abrir menú para:', book.titulo)
-  // Aquí podrías mostrar un menú contextual con opciones
 }
 
 const changePage = (newPage) => {
@@ -581,10 +590,8 @@ const changePage = (newPage) => {
     currentPage.value = newPage
 
     if (isSearching.value && searchQuery.value.trim()) {
-      // Si estamos en modo búsqueda, buscar en la página específica
       performSearch(searchQuery.value.trim(), newPage)
     } else {
-      // Si no, cargar página normal
       fetchBooks(newPage)
     }
   }
@@ -606,21 +613,17 @@ onMounted(() => {
 })
 
 watch(searchQuery, (newQuery, oldQuery) => {
-  // Esperar 500ms después de que el usuario deje de escribir
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     if (newQuery.trim() !== oldQuery.trim()) {
       if (newQuery.trim() === '') {
-        // Si la búsqueda está vacía, cargar libros normales
         fetchBooks(1)
       } else {
-        // Si hay texto, realizar búsqueda
         performSearch(newQuery.trim(), 1)
       }
     }
   }, 500)
 })
-
 </script>
 
 <style scoped></style>
