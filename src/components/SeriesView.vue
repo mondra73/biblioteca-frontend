@@ -102,7 +102,7 @@
               </div>
               <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600">Total Vistas</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ stats.totalWatched }}</p>
+                <p class="text-2xl font-semibold text-gray-900">{{ stats.totalRealSeries || stats.totalWatched }}</p>
               </div>
             </div>
           </div>
@@ -272,20 +272,6 @@ const isSearching = ref(false)
 // Datos de series desde el backend
 const series = ref([])
 
-// Datos de la nueva serie
-const newSerie = reactive({
-  titulo: '',
-  director: '',
-  fecha: '',
-  valuacion: null,
-  descripcion: ''
-})
-
-// Fecha actual para limitar el input de fecha
-const today = computed(() => {
-  return new Date().toISOString().split('T')[0]
-})
-
 // Paginación
 const pagination = reactive({
   currentPage: 1,
@@ -297,7 +283,8 @@ const pagination = reactive({
 const stats = reactive({
   totalWatched: 0,
   thisMonth: 0,
-  averageRating: 0
+  averageRating: 0,
+  totalRealSeries: 0 // Nueva propiedad para el total real de series
 })
 
 // Computed: Filtrar series según búsqueda
@@ -308,6 +295,38 @@ const filteredSeries = computed(() => {
 let searchTimeout = null
 
 // Métodos
+const fetchRealStats = async () => {
+  try {
+    const token = authStore.token
+
+    if (!token) {
+      return
+    }
+
+    const API_BASE = import.meta.env.VITE_API_BASE || ''
+
+    const response = await fetch(`${API_BASE}/api/admin/user/estadisticas-series`, {
+      headers: {
+        'auth-token': token,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Error al obtener estadísticas reales')
+    }
+
+    const data = await response.json()
+    
+    // Actualizar el total real de series
+    stats.totalRealSeries = data.totalSeries
+
+  } catch (err) {
+    console.error('Error fetching real stats:', err)
+    // No mostramos error al usuario para no interrumpir la experiencia
+  }
+}
+
 const performSearch = async (texto, page = 1) => {
   try {
     loading.value = true
@@ -419,6 +438,9 @@ const fetchSeries = async (page = 1) => {
     pagination.totalSeries = data.totalSeries
 
     calculateStats(data.series)
+    
+    // Obtener estadísticas reales después de cargar las series
+    await fetchRealStats()
 
   } catch (err) {
     error.value = err.message
@@ -476,16 +498,18 @@ const handleSerieEditada = () => {
   fetchSeries(currentPage.value)
   serieAEditar.value = null
   mostrarExitoEdicion()
+  fetchRealStats() // Actualizar estadísticas después de editar
 }
 
 const handleSerieEliminada = (serieId) => {
   fetchSeries(currentPage.value)
   selectedSerieId.value = null
   mostrarExitoEliminacion()
+  fetchRealStats() // Actualizar estadísticas después de eliminar
 }
 
 const calculateStats = (series) => {
-  // Total de series vistas
+  // Total de series vistas (solo las de la página actual)
   stats.totalWatched = series.length
 
   // Series vistas este mes
@@ -535,15 +559,6 @@ const getSerieGradient = (serie) => {
   return gradients[Math.abs(hash) % gradients.length]
 }
 
-const resetForm = () => {
-  newSerie.titulo = ''
-  newSerie.director = ''
-  newSerie.fecha = ''
-  newSerie.valuacion = null
-  newSerie.descripcion = ''
-  formError.value = null
-}
-
 const openSerieMenu = (serie) => {
   console.log('Abrir menú para:', serie.titulo)
   // Aquí podrías mostrar un menú contextual con opciones
@@ -567,6 +582,7 @@ const handleSerieAgregada = () => {
   showAddSerieModal.value = false
   mostrarExitoCreacion()
   fetchSeries(currentPage.value)
+  fetchRealStats() // Actualizar estadísticas después de agregar
 }
 
 const clearSearch = () => {

@@ -184,11 +184,11 @@
 
         <!-- Additional Personal Info -->
         <div class="mt-12 bg-background p-6 rounded-lg">
-          <h4 class="text-lg font-semibold text-foreground mb-4 text-center">Resumen de Actividad</h4>
+          <h4 class="text-lg font-semibold text-foreground mb-8 text-center">Resumen de Actividad</h4>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div>
               <div class="text-2xl font-bold text-primary">{{ totalContenido }}</div>
-              <div class="text-sm text-muted-foreground">Total Consumido</div>
+              <div class="text-sm ntext-muted-foreground">Total Consumido</div>
             </div>
             <div>
               <div class="text-2xl font-bold text-primary">{{ promedioMensual }}</div>

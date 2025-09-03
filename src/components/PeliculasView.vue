@@ -4,7 +4,7 @@
     <header class="bg-white shadow-sm border-b">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-">
             <a href="/dashboard" class="text-gray-600 hover:text-primary transition-colors">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -102,7 +102,7 @@
               </div>
               <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600">Total Vistas</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ stats.totalWatched }}</p>
+                <p class="text-2xl font-semibold text-gray-900">{{ stats.totalRealPeliculas || stats.totalWatched }}</p>
               </div>
             </div>
           </div>
@@ -273,6 +273,7 @@ const handlePeliculaAgregada = () => {
   showAddMovieModal.value = false
   mostrarExitoCreacion()
   fetchMovies(currentPage.value)
+  fetchRealStats() 
 }
 
 // Paginación
@@ -284,10 +285,42 @@ const pagination = reactive({
 
 // Estadísticas
 const stats = reactive({
-  totalWatched: 0,
   thisMonth: 0,
-  averageRating: 0
+  averageRating: 0,
+  totalRealPeliculas: 0 
 })
+
+const fetchRealStats = async () => {
+  try {
+    const token = authStore.token
+
+    if (!token) {
+      return
+    }
+
+    const API_BASE = import.meta.env.VITE_API_BASE || ''
+
+    const response = await fetch(`${API_BASE}/api/admin/user/estadisticas-peliculas`, {
+      headers: {
+        'auth-token': token,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Error al obtener estadísticas reales')
+    }
+
+    const data = await response.json()
+    
+    // Actualizar el total real de películas
+    stats.totalRealPeliculas = data.totalPeliculas
+
+  } catch (err) {
+    console.error('Error fetching real stats:', err)
+    // No mostramos error al usuario para no interrumpir la experiencia
+  }
+}
 
 // Computed: Filtrar películas según búsqueda
 const filteredMovies = computed(() => {
@@ -367,7 +400,6 @@ const fetchMovies = async (page = 1) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
-    // Usar la variable de entorno VITE_API_BASE
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
     const response = await fetch(`${API_BASE}/api/admin/user/peliculas?page=${page}`, {
@@ -379,45 +411,40 @@ const fetchMovies = async (page = 1) => {
       cache: 'no-store'
     })
 
-    // Leer la respuesta como texto primero
     const responseText = await response.text()
 
-    // Verificar si es HTML (error)
     if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
-      console.error('❌ El servidor devolvió HTML en lugar de JSON')
       throw new Error('Error del servidor: respuesta en formato incorrecto. Status: ' + response.status)
     }
 
-    // Intentar parsear como JSON
     let data
     try {
       data = JSON.parse(responseText)
     } catch (parseError) {
-      console.error('❌ Error parseando JSON:', parseError)
-      throw new Error('Respuesta del servidor en formato inválido: ' + responseText.substring(0, 100))
+      throw new Error('Respuesta del servidor en formato inválido')
     }
 
     if (!response.ok) {
       throw new Error(data.error || data.mensaje || `Error ${response.status}: ${response.statusText}`)
     }
 
-    // Éxito - procesar datos
     movies.value = data.peliculas
     pagination.currentPage = data.currentPage
     pagination.totalPages = data.totalPages
     pagination.totalPeliculas = data.totalPeliculas
 
     calculateStats(data.peliculas)
+    
+    // Obtener estadísticas reales después de cargar las películas
+    await fetchRealStats()
 
   } catch (err) {
     error.value = err.message
     console.error('❌ Error fetching movies:', err)
 
-    // Manejar errores de autenticación
     if (err.message.includes('denegado') || err.message.includes('token') ||
       err.message.includes('401') || err.message.includes('403')) {
       authStore.logout()
-      // Redirigir al login después de un breve delay
       setTimeout(() => {
         window.location.href = '/login'
       }, 1000)
@@ -465,12 +492,14 @@ const handlePeliculaEditada = () => {
   fetchMovies(currentPage.value)
   peliculaAEditar.value = null
   mostrarExitoEdicion()
+  fetchRealStats() 
 }
 
 const handlePeliculaEliminada = (peliculaId) => {
   fetchMovies(currentPage.value)
   selectedMovieId.value = null
   mostrarExitoEliminacion()
+  fetchRealStats() 
 }
 
 const calculateStats = (peliculas) => {
