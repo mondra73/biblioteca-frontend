@@ -137,8 +137,9 @@ const submitBookForm = async () => {
     }
 
     const token = authStore.token
+    const API_BASE = import.meta.env.VITE_API_BASE || ''
 
-    const response = await fetch('/api/admin/user/carga-libros', {
+    const response = await fetch(`${API_BASE}/api/admin/user/carga-libros`, {
       method: 'POST',
       headers: {
         'auth-token': token,
