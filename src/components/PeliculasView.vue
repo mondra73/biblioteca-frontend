@@ -90,58 +90,61 @@
 
         <!-- Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="bg-white rounded-lg shadow-sm p-6 border">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M7 4V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2h4a1 1 0 0 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6H3a1 1 0 1 1 0-2h4Z" />
-                  </svg>
-                </div>
-              </div>
-              <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Total Vistas</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ stats.totalRealPeliculas || stats.totalWatched }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg shadowSm p-6 border">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                </div>
-              </div>
-              <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Este Mes</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ stats.thisMonth }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg shadow-sm p-6 border">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
-                    </path>
-                  </svg>
-                </div>
-              </div>
-              <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Promedio Rating</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ stats.averageRating }}</p>
-              </div>
-            </div>
-          </div>
+  <div class="bg-white rounded-lg shadow-sm p-6 border">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 4V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2h4a1 1 0 0 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6H3a1 1 0 1 1 0-2h4Z" />
+          </svg>
         </div>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm font-medium text-gray-600">Total Vistas</p>
+        <p class="text-2xl font-semibold text-gray-900">{{ stats.totalRealPeliculas || stats.totalWatched }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadowSm p-6 border">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm font-medium text-gray-600">Este Mes</p>
+        <p class="text-2xl font-semibold text-gray-900">{{ stats.thisMonth }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm p-6 border">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
+            </path>
+          </svg>
+        </div>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm font-medium text-gray-600">Promedio Rating</p>
+        <!-- Mostrar el promedio real si está disponible, si no el calculado -->
+        <p class="text-2xl font-semibold text-gray-900">
+          {{ stats.averageRatingReal !== null ? stats.averageRatingReal : stats.averageRating }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
         <!-- Movies Grid -->
         <div v-if="filteredMovies.length > 0"
@@ -285,8 +288,10 @@ const pagination = reactive({
 
 // Estadísticas
 const stats = reactive({
+  totalWatched: 0,
   thisMonth: 0,
-  averageRating: 0,
+  averageRating: '0.0', 
+  averageRatingReal: null, 
   totalRealPeliculas: 0 
 })
 
@@ -313,8 +318,9 @@ const fetchRealStats = async () => {
 
     const data = await response.json()
     
-    // Actualizar el total real de películas
+    // Actualizar el total real de películas y el promedio real
     stats.totalRealPeliculas = data.totalPeliculas
+    stats.averageRatingReal = data.promedioRating || null
 
   } catch (err) {
     console.error('Error fetching real stats:', err)
@@ -503,10 +509,10 @@ const handlePeliculaEliminada = (peliculaId) => {
 }
 
 const calculateStats = (peliculas) => {
-  // Total de películas vistas
+  // Total de películas vistas (solo las de esta página)
   stats.totalWatched = peliculas.length
 
-  // Películas vistas este mes
+  // Películas vistas este mes (solo las de esta página)
   const currentMonth = new Date().getMonth()
   const currentYear = new Date().getFullYear()
   stats.thisMonth = peliculas.filter(movie => {
@@ -514,7 +520,8 @@ const calculateStats = (peliculas) => {
     return movieDate.getMonth() === currentMonth && movieDate.getFullYear() === currentYear
   }).length
 
-  // Promedio de rating (solo películas con valoración)
+  // Promedio de rating (solo películas con valoración de esta página)
+  // Este valor se muestra solo si no tenemos el promedio real
   const peliculasConRating = peliculas.filter(movie => movie.valuacion !== null && movie.valuacion !== undefined)
   if (peliculasConRating.length > 0) {
     const totalRating = peliculasConRating.reduce((sum, movie) => sum + movie.valuacion, 0)
