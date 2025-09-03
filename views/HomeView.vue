@@ -10,7 +10,7 @@
         <p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
           Registra, organiza y descubre. La forma más elegante de llevar control de todo lo que ves y lees.
         </p>
-        <button @click="redirectToLogin"
+        <button @click="redirectToDashboard"
           class="bg-primary text-primary-foreground px-8 py-3 text-lg rounded-md font-medium hover:bg-primary/90 transition-colors">
           Comenzar Ahora
         </button>
@@ -104,7 +104,7 @@
             class="bg-primary text-primary-foreground px-8 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors">
             Crear Cuenta
           </button>
-          <button @click="redirectToLogin"
+          <button @click="redirectToDashboard"
             class="border border-border bg-transparent text-foreground px-8 py-3 rounded-md font-medium hover:bg-gray-50 transition-colors">
             Iniciar Sesión
           </button>
@@ -119,8 +119,8 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const redirectToLogin = () => {
-  router.push('/login')
+const redirectToDashboard = () => {
+  router.push('/dashboard')
 }
 
 const goToRegister = () => {

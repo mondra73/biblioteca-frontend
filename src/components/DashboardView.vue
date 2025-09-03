@@ -192,9 +192,9 @@
               Cancelar
             </button>
             <button @click="abrirFormularioAgregar" :disabled="!tipoSeleccionado"
-  class="flex-1 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-  Continuar
-</button>
+              class="flex-1 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Continuar
+            </button>
           </div>
         </div>
       </div>
@@ -300,9 +300,9 @@ const fetchEstadisticas = async () => {
 
 // Función para abrir el formulario correspondiente
 const abrirFormularioAgregar = () => {
- 
+
   mostrarModalAgregar.value = false
-  
+
   switch (tipoSeleccionado.value) {
     case 'libros':
       mostrarModalLibro.value = true
@@ -314,7 +314,7 @@ const abrirFormularioAgregar = () => {
       mostrarModalSerie.value = true
       break
   }
-  
+
   tipoSeleccionado.value = ''
 }
 
@@ -344,7 +344,7 @@ const handleAgregarExitoso = () => {
       mostrarModalSerie.value = false
       break
   }
-  
+
   showModalExito.value = true
   fetchEstadisticas() // Actualizar estadísticas
 }

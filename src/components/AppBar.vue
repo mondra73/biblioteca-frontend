@@ -30,6 +30,10 @@
               Mi Lista
             </router-link>
 
+            <router-link to="/estadisticas" class="text-sm text-gray-700 hover:text-primary transition-colors">
+              Estadísticas
+            </router-link>
+
             <router-link to="/contacto" class="text-sm text-gray-700 hover:text-primary transition-colors">
               Contacto
             </router-link>
@@ -73,6 +77,11 @@
               <router-link to="/mi-lista" @click="isMenuOpen = false"
                 class="text-sm text-gray-700 hover:text-primary transition-colors py-2 text-center w-full">
                 Mi Lista
+              </router-link>
+
+              <router-link to="/estadisticas" @click="isMenuOpen = false"
+                class="text-sm text-gray-700 hover:text-primary transition-colors py-2 text-center w-full">
+                Estadísticas
               </router-link>
 
               <router-link to="/contacto" @click="isMenuOpen = false"
