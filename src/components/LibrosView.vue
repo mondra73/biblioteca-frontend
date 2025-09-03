@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 min-h-screen">
-    <!-- Header (sin cambios) -->
+    <!-- Header -->
     <header class="bg-white shadow-sm border-b">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
@@ -12,7 +12,8 @@
             </a>
             <h1 class="text-2xl font-bold text-gray-900">Mis Libros</h1>
           </div>
-          <button @click="showAddBookModal = true"
+          <!-- Cambia el botón para usar el modal importado -->
+          <button @click="mostrarModalAgregar = true"
             class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
@@ -191,13 +192,14 @@
         <div v-else class="text-center py-12">
           <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477 4.5 1.253">
             </path>
           </svg>
           <h3 class="mt-2 text-sm font-medium text-gray-900">No hay libros</h3>
           <p class="mt-1 text-sm text-gray-500">Comienza agregando tu primer libro leído.</p>
           <div class="mt-6">
-            <button @click="showAddBookModal = true"
+            <!-- Cambia este botón también -->
+            <button @click="mostrarModalAgregar = true"
               class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
               <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
@@ -230,91 +232,11 @@
       </div>
     </main>
 
-    <!-- Add Book Modal (simplified) -->
-    <div v-if="showAddBookModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4">Agregar Nuevo Libro</h2>
-
-        <!-- Formulario -->
-        <form @submit.prevent="submitBookForm">
-          <div class="space-y-4">
-            <!-- Título -->
-            <div>
-              <label for="titulo" class="block text-sm font-medium text-gray-700 mb-1">Título *</label>
-              <input v-model="newBook.titulo" type="text" id="titulo" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
-                placeholder="Título del libro">
-            </div>
-
-            <!-- Autor -->
-            <div>
-              <label for="autor" class="block text-sm font-medium text-gray-700 mb-1">Autor *</label>
-              <input v-model="newBook.autor" type="text" id="autor" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
-                placeholder="Autor del libro">
-            </div>
-
-            <!-- Género -->
-            <div>
-              <label for="genero" class="block text-sm font-medium text-gray-700 mb-1">Género</label>
-              <input v-model="newBook.genero" type="text" id="genero"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
-                placeholder="Género literario">
-            </div>
-
-            <!-- Fecha -->
-            <div>
-              <label for="fecha" class="block text-sm font-medium text-gray-700 mb-1">Fecha de lectura *</label>
-              <input v-model="newBook.fecha" type="date" id="fecha" required :max="today"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
-            </div>
-
-            <!-- Valoración -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Valoración</label>
-              <div class="flex space-x-1">
-                <button v-for="rating in 5" :key="rating" type="button" @click="newBook.valuacion = rating"
-                  class="w-10 h-10 rounded-full border-2 transition-all duration-200" :class="{
-                    'border-yellow-400 bg-yellow-100 text-yellow-600': rating <= newBook.valuacion,
-                    'border-gray-300 text-gray-400 hover:border-yellow-400 hover:text-yellow-500': rating > newBook.valuacion
-                  }">
-                  {{ rating }}
-                </button>
-              </div>
-              <div class="mt-1 text-sm text-gray-500">
-                {{ newBook.valuacion ? `Seleccionado: ${newBook.valuacion} estrellas` : 'Sin valorar' }}
-              </div>
-            </div>
-
-            <!-- Descripción -->
-            <div>
-              <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-              <textarea v-model="newBook.descripcion" id="descripcion" rows="3"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
-                placeholder="Reseña o comentarios sobre el libro..."></textarea>
-            </div>
-          </div>
-
-          <!-- Mensajes de error -->
-          <div v-if="formError" class="mt-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md">
-            {{ formError }}
-          </div>
-
-          <!-- Botones -->
-          <div class="mt-6 flex justify-end space-x-3">
-            <button type="button" @click="closeModal"
-              class="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md">
-              Cancelar
-            </button>
-            <button type="submit" :disabled="loadingSubmit"
-              class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed">
-              <span v-if="loadingSubmit">Guardando...</span>
-              <span v-else>Guardar</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+     <ModalAgregarLibro
+      v-if="mostrarModalAgregar" 
+      @close="mostrarModalAgregar = false" 
+      @success="handleLibroAgregado" 
+    />
 
     <!-- Modal de Detalles -->
     <ModalDetalleLibro v-if="selectedBookId" :libroId="selectedBookId" @close="selectedBookId = null"
@@ -337,7 +259,7 @@ import { useAuthStore } from '../../stores/auth'
 
 // Estado reactivo
 const searchQuery = ref('')
-const showAddBookModal = ref(false)
+const mostrarModalAgregar = ref(false)
 const showModalExitoView = ref(false)
 const modalExitoConfig = ref({
   titulo: '',
@@ -347,8 +269,6 @@ const loading = ref(false)
 const error = ref(null)
 const currentPage = ref(1)
 const authStore = useAuthStore()
-const loadingSubmit = ref(false)
-const formError = ref(null)
 const selectedBookId = ref(null)
 const libroAEditar = ref(null)
 const isSearching = ref(false)
@@ -356,15 +276,11 @@ const isSearching = ref(false)
 // Datos de libros desde el backend
 const books = ref([])
 
-// Datos del nuevo libro
-const newBook = reactive({
-  titulo: '',
-  autor: '',
-  genero: '',
-  fecha: '',
-  valuacion: null,
-  descripcion: ''
-})
+const handleLibroAgregado = () => {
+  mostrarModalAgregar.value = false
+  mostrarExitoCreacion()
+  fetchBooks(currentPage.value) 
+}
 
 // Fecha actual para limitar el input de fecha
 const today = computed(() => {
@@ -477,7 +393,7 @@ const fetchBooks = async (page = 1) => {
 
     // Leer la respuesta como texto primero
     const responseText = await response.text()
-    
+
     // Verificar si es HTML (error)
     if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
       console.error('❌ El servidor devolvió HTML en lugar de JSON')
@@ -620,90 +536,6 @@ const getBookGradient = (book) => {
   return gradients[Math.abs(hash) % gradients.length]
 }
 
-const closeModal = () => {
-  showAddBookModal.value = false
-  resetForm()
-}
-
-const resetForm = () => {
-  newBook.titulo = ''
-  newBook.autor = ''
-  newBook.genero = ''
-  newBook.fecha = ''
-  newBook.valuacion = null
-  newBook.descripcion = ''
-  formError.value = null
-}
-
-const submitBookForm = async () => {
-  try {
-    loadingSubmit.value = true
-    formError.value = null
-
-    // Validaciones básicas
-    if (!newBook.titulo.trim()) {
-      throw new Error('El título es requerido')
-    }
-
-    if (!newBook.autor.trim()) {
-      throw new Error('El autor es requerido')
-    }
-
-    if (!newBook.fecha) {
-      throw new Error('La fecha es requerida')
-    }
-
-    // Validar que la fecha no sea futura
-    const selectedDate = new Date(newBook.fecha)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0) // Resetear horas para comparar solo fechas
-
-    if (selectedDate > today) {
-      throw new Error('La fecha no puede ser futura')
-    }
-
-    const token = authStore.token
-
-    const response = await fetch('/api/admin/user/carga-libros', {
-      method: 'POST',
-      headers: {
-        'auth-token': token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        titulo: newBook.titulo.trim(),
-        autor: newBook.autor.trim(),
-        genero: newBook.genero.trim(),
-        fecha: newBook.fecha,
-        valuacion: newBook.valuacion,
-        descripcion: newBook.descripcion.trim()
-      })
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.mensaje || data.error || 'Error al guardar el libro')
-    }
-
-    showAddBookModal.value = false
-    resetForm()
-
-    showModalExitoView.value = true
-    showModalExitoView.value = true
-
-    mostrarExitoCreacion()
-
-    // Recargar la lista de libros
-    fetchBooks(currentPage.value)
-
-  } catch (err) {
-    formError.value = err.message
-    console.error('Error al guardar libro:', err)
-  } finally {
-    loadingSubmit.value = false
-  }
-}
 
 const openBookMenu = (book) => {
   console.log('Abrir menú para:', book.titulo)

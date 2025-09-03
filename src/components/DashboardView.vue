@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen bg-background">
 
-
     <section class="px-6 py-12 max-w-6xl mx-auto">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-foreground mb-4 text-balance">¿Qué quieres hacer hoy?</h2>
@@ -140,7 +139,7 @@
       <div class="max-w-4xl mx-auto text-center">
         <h2 class="text-2xl font-bold text-foreground mb-8 text-balance">Acciones Rápidas</h2>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
+          <button @click="mostrarModalAgregar = true"
             class="bg-primary text-primary-foreground px-8 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors">
             + Agregar Nuevo
           </button>
@@ -151,6 +150,70 @@
         </div>
       </div>
     </section>
+
+    <!-- Modal para Agregar Nuevo -->
+    <div v-if="mostrarModalAgregar"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="text-center">
+          <!-- Ícono -->
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 mb-4">
+            <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+              </path>
+            </svg>
+          </div>
+
+          <!-- Título -->
+          <h3 class="text-lg font-medium text-gray-900 mb-2">
+            ¿Qué deseas agregar?
+          </h3>
+
+          <!-- Mensaje secundario -->
+          <p class="text-sm text-gray-500 mb-4">
+            Selecciona el tipo de contenido que quieres agregar
+          </p>
+
+          <!-- Select con opciones -->
+          <div class="mb-4">
+            <select v-model="tipoSeleccionado"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+              <option value="" disabled selected>Selecciona una opción</option>
+              <option value="libros">Libro</option>
+              <option value="peliculas">Película</option>
+              <option value="series">Serie</option>
+            </select>
+          </div>
+
+          <!-- Botones -->
+          <div class="flex gap-3 mt-6">
+            <button @click="mostrarModalAgregar = false"
+              class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+              Cancelar
+            </button>
+            <button @click="abrirFormularioAgregar" :disabled="!tipoSeleccionado"
+  class="flex-1 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+  Continuar
+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Agregar Libro -->
+    <ModalAgregarLibro v-if="mostrarModalLibro" @close="mostrarModalLibro = false" @success="handleAgregarExitoso" />
+
+    <!-- Modal para Agregar Película -->
+    <ModalAgregarPelicula v-if="mostrarModalPelicula" @close="mostrarModalPelicula = false"
+      @success="handleAgregarExitoso" />
+
+    <!-- Modal para Agregar Serie -->
+    <ModalAgregarSerie v-if="mostrarModalSerie" @close="mostrarModalSerie = false" @success="handleAgregarExitoso" />
+
+    <!-- Modal de Éxito -->
+    <ModalExitoView v-if="showModalExito" :titulo="modalExitoConfig.titulo" :mensaje="modalExitoConfig.mensaje"
+      @close="showModalExito = false" />
+
   </div>
 </template>
 
@@ -161,6 +224,18 @@ import { ref, onMounted, watch } from 'vue'
 
 const router = useRouter()
 const auth = useAuthStore()
+
+// Estado para el modal de agregar
+const mostrarModalAgregar = ref(false)
+const mostrarModalLibro = ref(false)
+const mostrarModalPelicula = ref(false)
+const mostrarModalSerie = ref(false)
+const showModalExito = ref(false)
+const tipoSeleccionado = ref('')
+const modalExitoConfig = ref({
+  titulo: '',
+  mensaje: ''
+})
 
 // ✅ Agregar estado reactivo para las estadísticas
 const estadisticas = ref({
@@ -221,6 +296,56 @@ const fetchEstadisticas = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// Función para abrir el formulario correspondiente
+const abrirFormularioAgregar = () => {
+  mostrarModalAgregar.value = false
+  
+  switch (tipoSeleccionado.value) {
+    case 'libros':
+      mostrarModalLibro.value = true
+      break
+    case 'peliculas':
+      mostrarModalPelicula.value = true
+      break
+    case 'series':
+      mostrarModalSerie.value = true
+      break
+  }
+  
+  tipoSeleccionado.value = ''
+}
+
+// Función para manejar agregado exitoso
+const handleAgregarExitoso = () => {
+  // Configurar mensaje de éxito según el tipo
+  switch (true) {
+    case mostrarModalLibro.value:
+      modalExitoConfig.value = {
+        titulo: 'Libro agregado',
+        mensaje: 'El libro se ha agregado exitosamente a tu biblioteca.'
+      }
+      mostrarModalLibro.value = false
+      break
+    case mostrarModalPelicula.value:
+      modalExitoConfig.value = {
+        titulo: 'Película agregada',
+        mensaje: 'La película se ha agregado exitosamente.'
+      }
+      mostrarModalPelicula.value = false
+      break
+    case mostrarModalSerie.value:
+      modalExitoConfig.value = {
+        titulo: 'Serie agregada',
+        mensaje: 'La serie se ha agregado exitosamente.'
+      }
+      mostrarModalSerie.value = false
+      break
+  }
+  
+  showModalExito.value = true
+  fetchEstadisticas() // Actualizar estadísticas
 }
 
 // ✅ Cargar estadísticas al montar el componente

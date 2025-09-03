@@ -1,14 +1,14 @@
 <template>
-  <header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60 shadow-sm">
-    <div class="container mx-auto px-6 py-4">
+  <header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/65 backdrop-blur supports-backdrop-filter:bg-white/60 shadow-sm">
+    <div class="container mx-auto px-6 py-6">
       <div class="flex items-center justify-between">
         <div></div>
 
         <!-- Navegación -->
         <nav class="flex items-center gap-4">
-          <button class="px-4 py-2 text-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors duration-200">
+          <!-- <button class="px-4 py-2 text-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors duration-200">
             Nosotros
-          </button>
+          </button> -->
 
           <!-- Botón dinámico según estado de autenticación -->
           <button
