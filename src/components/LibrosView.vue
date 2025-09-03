@@ -308,13 +308,9 @@ const stats = reactive({
 const fetchRealStats = async () => {
   try {
     const token = authStore.token
-
-    if (!token) {
-      return
-    }
+    if (!token) return
 
     const API_BASE = import.meta.env.VITE_API_BASE || ''
-
     const response = await fetch(`${API_BASE}/api/admin/user/estadisticas-libros`, {
       headers: {
         'auth-token': token,
@@ -322,18 +318,16 @@ const fetchRealStats = async () => {
       }
     })
 
-    if (!response.ok) {
-      throw new Error('Error al obtener estadísticas reales')
-    }
+    if (!response.ok) throw new Error('Error al obtener estadísticas reales')
 
     const data = await response.json()
     
-    // Actualizar el total real de libros
+    // Actualizar ambos valores desde el endpoint
     stats.totalRealLibros = data.totalLibros
+    stats.averageRating = data.promedioRating || '0.0' // Usar el promedio real
 
   } catch (err) {
     console.error('Error fetching real stats:', err)
-    // No mostramos error al usuario para no interrumpir la experiencia
   }
 }
 
