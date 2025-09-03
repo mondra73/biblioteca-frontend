@@ -1,5 +1,4 @@
 <template>
-  <!-- CAMBIAR: usar mostrarModalPelicula en lugar de props.visible -->
   <div v-if="mostrarModalPelicula" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-lg p-6 w-full max-w-md">
       <h2 class="text-xl font-bold mb-4">Agregar Nueva Película</h2>
