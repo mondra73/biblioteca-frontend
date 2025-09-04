@@ -140,6 +140,12 @@ const router = useRouter()
 const auth = useAuthStore()
 const isMenuOpen = ref(false)
 
+const logout = () => {
+  auth.logout()
+  // Opcional: redirigir al home
+  router.push('/')
+}
+
 onMounted(() => {
   auth.checkAuth()
   window.addEventListener('storage', handleStorageChange)

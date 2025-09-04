@@ -252,11 +252,6 @@ const goToSection = (section) => {
   router.push(`/${section}`)
 }
 
-const logout = () => {
-  auth.logout()
-  router.push('/')
-}
-
 const goToEstadisticas = () => {
   router.push('/estadisticas')
 }

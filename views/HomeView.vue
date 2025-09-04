@@ -100,24 +100,154 @@
           Únete a nuestra comunidad y nunca más olvides qué has visto o leído.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <button @click="goToRegister"
+          <!-- Mostrar botón "Agregar Nuevo" si el usuario está autenticado -->
+          <button v-if="auth.isAuthenticated" @click="mostrarModalAgregar = true"
             class="bg-primary text-primary-foreground px-8 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors">
-            Crear Cuenta
+            + Agregar Nuevo
           </button>
-          <button @click="redirectToDashboard"
-            class="border border-border bg-transparent text-foreground px-8 py-3 rounded-md font-medium hover:bg-gray-50 transition-colors">
-            Iniciar Sesión
-          </button>
+
+          <!-- Mostrar botones de registro/inicio de sesión si el usuario NO está autenticado -->
+          <template v-else>
+            <button @click="goToRegister"
+              class="bg-primary text-primary-foreground px-8 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors">
+              Crear Cuenta
+            </button>
+            <button @click="redirectToDashboard"
+              class="border border-border bg-transparent text-foreground px-8 py-3 rounded-md font-medium hover:bg-gray-50 transition-colors">
+              Iniciar Sesión
+            </button>
+          </template>
         </div>
       </div>
     </section>
+
+    <!-- Modal para Agregar Nuevo (copiado del Dashboard) -->
+    <div v-if="mostrarModalAgregar"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="text-center">
+          <!-- Ícono -->
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 mb-4">
+            <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+              </path>
+            </svg>
+          </div>
+
+          <!-- Título -->
+          <h3 class="text-lg font-medium text-gray-900 mb-2">
+            ¿Qué deseas agregar?
+          </h3>
+
+          <!-- Mensaje secundario -->
+          <p class="text-sm text-gray-500 mb-4">
+            Selecciona el tipo de contenido que quieres agregar
+          </p>
+
+          <!-- Select con opciones -->
+          <div class="mb-4">
+            <select v-model="tipoSeleccionado"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+              <option value="" disabled selected>Selecciona una opción</option>
+              <option value="libros">Libro</option>
+              <option value="peliculas">Película</option>
+              <option value="series">Serie</option>
+            </select>
+          </div>
+
+          <!-- Botones -->
+          <div class="flex gap-3 mt-6">
+            <button @click="mostrarModalAgregar = false"
+              class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+              Cancelar
+            </button>
+            <button @click="abrirFormularioAgregar" :disabled="!tipoSeleccionado"
+              class="flex-1 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Continuar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Agregar Libro -->
+    <ModalAgregarLibro v-if="mostrarModalLibro" @close="mostrarModalLibro = false" @success="handleAgregarExitoso" />
+
+    <!-- Modal para Agregar Película -->
+    <ModalAgregarPelicula v-if="mostrarModalPelicula" @close="mostrarModalPelicula = false"
+      @success="handleAgregarExitoso" />
+
+    <!-- Modal para Agregar Serie -->
+    <ModalAgregarSerie v-if="mostrarModalSerie" @close="mostrarModalSerie = false" @success="handleAgregarExitoso" />
+
+    <!-- Modal de Éxito -->
+    <ModalExitoView v-if="showModalExito" :titulo="modalExitoConfig.titulo" :mensaje="modalExitoConfig.mensaje"
+      @close="showModalExito = false" />
   </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
+const auth = useAuthStore()
+
+// Estados para la autenticación y modales
+const isAuthenticated = ref(false)
+const mostrarModalAgregar = ref(false)
+const mostrarModalLibro = ref(false)
+const mostrarModalPelicula = ref(false)
+const mostrarModalSerie = ref(false)
+const showModalExito = ref(false)
+const tipoSeleccionado = ref('')
+const modalExitoConfig = ref({
+  titulo: '',
+  mensaje: ''
+})
+
+// Función para decodificar el token JWT
+const decodeJWT = (token) => {
+  try {
+    // El token JWT tiene 3 partes separadas por puntos: header.payload.signature
+    const base64Url = token.split('.')[1]
+    // Reemplazar caracteres específicos de base64url
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+    // Decodificar la cadena base64
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    }).join(''))
+
+    return JSON.parse(jsonPayload)
+  } catch (error) {
+    console.error('Error decodificando el token:', error)
+    return null
+  }
+}
+
+// Función para verificar si el usuario está autenticado
+const checkAuthentication = () => {
+  const token = localStorage.getItem('auth-token')
+
+  if (token) {
+    const decodedToken = decodeJWT(token)
+
+    if (decodedToken) {
+      // Verificar si el token ha expirado
+      const currentTime = Math.floor(Date.now() / 1000)
+      if (decodedToken.exp && decodedToken.exp > currentTime) {
+        isAuthenticated.value = true
+        return
+      } else {
+        // Token expirado, limpiar del localStorage
+        localStorage.removeItem('auth-token')
+      }
+    }
+  }
+
+  isAuthenticated.value = false
+}
 
 const redirectToDashboard = () => {
   router.push('/dashboard')
@@ -126,6 +256,60 @@ const redirectToDashboard = () => {
 const goToRegister = () => {
   router.push('/register')
 }
+
+// Función para abrir el formulario correspondiente
+const abrirFormularioAgregar = () => {
+  mostrarModalAgregar.value = false
+
+  switch (tipoSeleccionado.value) {
+    case 'libros':
+      mostrarModalLibro.value = true
+      break
+    case 'peliculas':
+      mostrarModalPelicula.value = true
+      break
+    case 'series':
+      mostrarModalSerie.value = true
+      break
+  }
+
+  tipoSeleccionado.value = ''
+}
+
+// Función para manejar agregado exitoso
+const handleAgregarExitoso = () => {
+  // Configurar mensaje de éxito según el tipo
+  switch (true) {
+    case mostrarModalLibro.value:
+      modalExitoConfig.value = {
+        titulo: 'Libro agregado',
+        mensaje: 'El libro se ha agregado exitosamente a tu biblioteca.'
+      }
+      mostrarModalLibro.value = false
+      break
+    case mostrarModalPelicula.value:
+      modalExitoConfig.value = {
+        titulo: 'Película agregada',
+        mensaje: 'La película se ha agregado exitosamente.'
+      }
+      mostrarModalPelicula.value = false
+      break
+    case mostrarModalSerie.value:
+      modalExitoConfig.value = {
+        titulo: 'Serie agregada',
+        mensaje: 'La serie se ha agregado exitosamente.'
+      }
+      mostrarModalSerie.value = false
+      break
+  }
+
+  showModalExito.value = true
+}
+
+// Verificar autenticación al montar el componente
+onMounted(() => {
+  checkAuthentication()
+})
 </script>
 
 <style>
