@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f8fafc;
         }
+
         .email-container {
             max-width: 600px;
             margin: 0 auto;
@@ -19,24 +21,29 @@
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .header {
             background-color: #3b82f6;
             padding: 24px;
             text-align: center;
         }
+
         .logo {
             color: #ffffff;
             font-size: 24px;
             font-weight: bold;
             margin: 0;
         }
+
         .content {
             padding: 32px 24px;
         }
+
         .icon-container {
             text-align: center;
             margin-bottom: 24px;
         }
+
         .icon {
             width: 64px;
             height: 64px;
@@ -46,15 +53,19 @@
             justify-content: center;
             margin-bottom: 16px;
         }
+
         .icon-success {
             background-color: #dcfce7;
         }
+
         .icon-warning {
             background-color: #fef3c7;
         }
+
         .icon-info {
             background-color: #dbeafe;
         }
+
         .title {
             font-size: 24px;
             font-weight: bold;
@@ -62,6 +73,7 @@
             margin: 0 0 16px 0;
             text-align: center;
         }
+
         .message {
             font-size: 16px;
             color: #6b7280;
@@ -69,6 +81,7 @@
             margin: 0 0 32px 0;
             text-align: center;
         }
+
         .button {
             display: inline-block;
             background-color: #3b82f6;
@@ -82,65 +95,42 @@
             display: block;
             width: fit-content;
         }
+
         .button:hover {
             background-color: #2563eb;
         }
+
         .footer {
             background-color: #f8fafc;
             padding: 24px;
             text-align: center;
             border-top: 1px solid #e5e7eb;
         }
+
         .footer-text {
             font-size: 14px;
             color: #6b7280;
             margin: 0 0 8px 0;
         }
+
         .footer-links {
             font-size: 14px;
         }
+
         .footer-links a {
             color: #3b82f6;
             text-decoration: none;
             margin: 0 8px;
         }
+
         .divider {
             margin: 40px 0;
             border-bottom: 2px solid #e5e7eb;
         }
     </style>
 </head>
-<body>
-    <!-- PLANTILLA 1: REGISTRO EXITOSO -->
-    <div class="email-container">
-        <div class="header">
-            <h1 class="logo">Tu Plataforma</h1>
-        </div>
-        <div class="content">
-            <div class="icon-container">
-                <div class="icon icon-success">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
-                        <path d="M9 12l2 2 4-4"/>
-                        <circle cx="12" cy="12" r="10"/>
-                    </svg>
-                </div>
-            </div>
-            <h2 class="title">¡Bienvenido a nuestra plataforma!</h2>
-            <p class="message">
-                Tu cuenta ha sido creada exitosamente. Para completar el proceso de registro, 
-                por favor confirma tu dirección de correo electrónico haciendo clic en el botón de abajo.
-            </p>
-            <a href="#" class="button">Confirmar Email</a>
-        </div>
-        <div class="footer">
-            <p class="footer-text">© 2025 Biblioteca Multimedia. Todos los derechos reservados.</p>
-            <div class="footer-links">
-                <a href="/contacto">Contacto</a>
-            </div>
-        </div>
-    </div>
 
-    <div class="divider"></div>
+<body>
 
     <!-- PLANTILLA 2: RECUPERACIÓN DE CONTRASEÑA -->
     <div class="email-container">
@@ -151,14 +141,15 @@
             <div class="icon-container">
                 <div class="icon icon-warning">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2">
-                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        <path
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                 </div>
             </div>
             <h2 class="title">Recuperar Contraseña</h2>
             <p class="message">
-                Hemos recibido una solicitud para restablecer tu contraseña. 
-                Si no realizaste esta solicitud, puedes ignorar este email. 
+                Hemos recibido una solicitud para restablecer tu contraseña.
+                Si no realizaste esta solicitud, puedes ignorar este email.
                 Para crear una nueva contraseña, haz clic en el botón de abajo.
             </p>
             <a href="#" class="button">Restablecer Contraseña</a>
@@ -182,16 +173,16 @@
             <div class="icon-container">
                 <div class="icon icon-info">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 16v-4"/>
-                        <path d="M12 8h.01"/>
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 16v-4" />
+                        <path d="M12 8h.01" />
                     </svg>
                 </div>
             </div>
             <h2 class="title">Actualización Importante</h2>
             <p class="message">
-                Tenemos noticias importantes que compartir contigo. 
-                Hemos actualizado nuestros términos de servicio y políticas de privacidad. 
+                Tenemos noticias importantes que compartir contigo.
+                Hemos actualizado nuestros términos de servicio y políticas de privacidad.
                 Te recomendamos revisar estos cambios para mantenerte informado.
             </p>
             <a href="#" class="button">Ver Actualizaciones</a>
@@ -204,4 +195,5 @@
         </div>
     </div>
 </body>
+
 </html>
