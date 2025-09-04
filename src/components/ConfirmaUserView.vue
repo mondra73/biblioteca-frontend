@@ -98,7 +98,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import api from '../api'; // Asegúrate de que la ruta sea correcta
+import api from '../api';
 
 const route = useRoute();
 const loading = ref(true);
@@ -110,11 +110,8 @@ const confirmAccount = async () => {
     loading.value = true;
     error.value = false;
     
-    // Obtener parámetros de la RUTA (no query)
     const mail = route.params.mail;
     const token = route.params.token;
-
-    console.log("Parámetros recibidos:", { mail, token }); // Para debugging
 
     if (!mail || !token) {
       throw new Error("Faltan parámetros necesarios para la verificación");

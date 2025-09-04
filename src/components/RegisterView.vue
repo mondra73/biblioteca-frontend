@@ -1,15 +1,6 @@
 <template>
   <div class="min-h-screen bg-white flex items-center justify-center px-6 py-12">
-    <!-- Botón volver -->
-    <button
-      class="fixed top-4 left-4 z-50 px-4 py-2 rounded-md flex items-center transition-colors bg-transparent text-gray-900 border-none hover:bg-gray-100"
-      @click="goBack">
-      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-      Volver al inicio
-    </button>
-
+    
     <!-- Card -->
     <div class="w-full max-w-md">
       <div class="bg-white shadow-lg border-0 rounded-lg border border-gray-200">
@@ -171,13 +162,45 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal de Registro Exitoso -->
+    <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" @click.self="closeModal">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="text-center">
+          <!-- Ícono de éxito -->
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+            <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+
+          <!-- Mensaje principal -->
+          <h3 class="mt-4 text-lg font-medium text-gray-900">
+            ¡Registro exitoso!
+          </h3>
+
+          <!-- Mensaje secundario -->
+          <p class="mt-2 text-sm text-gray-500">
+            Revisa tu email para confirmar tu cuenta y comenzar a disfrutar de la plataforma.
+          </p>
+
+          <!-- Botón -->
+          <div class="mt-6">
+            <button @click="closeModal" 
+              class="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import api from '../api'; // ← Importa la api
+import api from '../api';
 
 const router = useRouter();
 const name = ref("");
@@ -187,6 +210,7 @@ const confirmPassword = ref("");
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const loading = ref(false);
+const showSuccessModal = ref(false);
 
 const errors = ref({
   name: "",
@@ -209,6 +233,17 @@ const togglePassword = () => {
 
 const toggleConfirmPassword = () => {
   showConfirmPassword.value = !showConfirmPassword.value;
+};
+
+const closeModal = () => {
+  showSuccessModal.value = false;
+  router.push('/');
+};
+
+const handleEscapeKey = (event) => {
+  if (event.key === 'Escape' && showSuccessModal.value) {
+    closeModal();
+  }
 };
 
 const validateName = (name) => {
@@ -239,9 +274,9 @@ const validateConfirmPassword = (password, confirmPassword) => {
 const onSubmit = async () => {
   errors.value = {
     name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
   };
 
   let hasErrors = false;
@@ -284,12 +319,7 @@ const onSubmit = async () => {
     });
 
     if (response.data.error === null) {
-      // Registro exitoso
-      console.log('Registro exitoso:', response.data);
-
-      // Mostrar mensaje de éxito y redirigir
-      alert('¡Registro exitoso! Revisa tu email para confirmar tu cuenta.');
-      router.push('/');
+      showSuccessModal.value = true;
     } else {
       // Error del servidor
       errors.value.email = response.data.error;
@@ -310,4 +340,13 @@ const onGoogleLogin = () => {
   console.log("Google register clicked");
   alert("Google OAuth se implementaría aquí");
 };
+
+// Event listeners para teclas
+onMounted(() => {
+  document.addEventListener('keydown', handleEscapeKey);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscapeKey);
+});
 </script>
