@@ -11,6 +11,25 @@ const api = axios.create({
   },
 })
 
+// 🚀 Función para refrescar el token
+async function refreshAccessToken() {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/api/refresh-token`,
+      {},
+      { withCredentials: true } // importante si usás cookies para refresh
+    )
+    const newAccessToken = response.data.accessToken
+    if (newAccessToken) {
+      localStorage.setItem('auth-token', newAccessToken)
+      return newAccessToken
+    }
+  } catch (err) {
+    console.error('Error refrescando token', err)
+    return null
+  }
+}
+
 // Interceptor de requests
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth-token')
@@ -40,13 +59,27 @@ api.interceptors.response.use(
 
     return response
   },
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('auth-token')
-      window.location.href = '/login?sessionExpired=true'
+  async (error) => {
+    const originalRequest = error.config
+
+    // 🔄 Si el token expiró (401) y no hemos intentado refrescar aún
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+      const newToken = await refreshAccessToken()
+
+      if (newToken) {
+        originalRequest.headers['Authorization'] = `Bearer ${newToken}`
+        originalRequest.headers['auth-token'] = newToken
+        return api(originalRequest) // reintenta con el nuevo token
+      } else {
+        // si no hay refresh, cerrar sesión
+        localStorage.removeItem('auth-token')
+        window.location.href = '/login?sessionExpired=true'
+      }
     }
+
     return Promise.reject(error)
-  },
+  }
 )
 
 export default api

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { jwtDecode } from 'jwt-decode'
+import api from '../src/api.js' 
 
 export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
@@ -63,15 +64,31 @@ export const useAuthStore = defineStore('auth', () => {
     userData.value = null
   }
 
+  // 🔹 Nueva función para renovar el token
+  const refreshAccessToken = async () => {
+    try {
+      const res = await api.post('/user/refresh-token') // este endpoint devuelve { token: ... }
+      if (res.data.token) {
+        login({ data: { token: res.data.token } }) // Reutilizamos login()
+        return true
+      }
+    } catch (err) {
+      console.error('No se pudo refrescar el token', err)
+      logout()
+      return false
+    }
+  }
+
   // Verificar autenticación al inicializar
   checkAuth()
 
   return {
     isAuthenticated,
     userData,
-    token, // Exportar el getter del token
+    token,
     checkAuth,
     login,
     logout,
+    refreshAccessToken, // ✅ exportamos la nueva función
   }
 })

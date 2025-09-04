@@ -9,6 +9,7 @@ import SeriesView from '../components/SeriesView.vue'
 import MiListaView from '../components/MiListaView.vue'
 import EstadisticasView from '../components/EstadisticasView.vue'
 import ContactoView from '../components/ContactoView.vue'
+import NotFoundView from '../components/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,7 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     { path: '/contacto', name: 'contacto', component: ContactoView },
+    { path: '/:pathMatch(.*)*', component: NotFoundView }
   ],
 })
 

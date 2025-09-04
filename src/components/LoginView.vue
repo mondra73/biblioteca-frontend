@@ -186,7 +186,8 @@ const onSubmit = async () => {
   try {
     const response = await api.post('/user/login', {
       email: email.value,
-      password: password.value
+      password: password.value,
+      rememberMe: rememberMe.value
     });
 
     if (response.data.error === null) {
