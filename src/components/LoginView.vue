@@ -75,9 +75,10 @@
                   v-model="rememberMe" />
                 <span class="text-muted-foreground">Recordarme</span>
               </label>
-              <button type="button" class="text-primary hover:opacity-80 transition-opacity">
+              <router-link to="/olvide-password" class="text-primary hover:opacity-80 transition-opacity">
                 ¿Olvidaste tu contraseña?
-              </button>
+              </router-link>
+
             </div>
 
             <!-- Botón submit -->

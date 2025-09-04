@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../../views/HomeView.vue'
 import LoginView from '../components/LoginView.vue'
 import RegisterView from '../components/RegisterView.vue'
+import OlvidePasswordView from '../components/OlvidePasswordView.vue'
+import NuevoPasswordView from '../components/NuevoPasswordView.vue'
 import ConfirmaUserView from '../components/ConfirmaUserView.vue'
 import DashboardView from '../components/DashboardView.vue'
 import LibrosView from '../components/LibrosView.vue'
@@ -18,7 +20,8 @@ const router = createRouter({
     { path: '/', name: 'home', component: HomeView },
     { path: '/login', name: 'login', component: LoginView },
     { path: '/register', name: 'register', component: RegisterView },
-    { path: '/register', name: 'register', component: RegisterView },
+    { path: '/olvide-password', name: 'olvide-password', component: OlvidePasswordView },
+    { path: '/nuevo-password/:email?/:token?', name: 'nuevo-password', component: NuevoPasswordView, props: true },
     { path: '/confirmar/:mail/:token', name: 'confirma', component: ConfirmaUserView, props: true },
     { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
     { path: '/libros', name: 'libros', component: LibrosView, meta: { requiresAuth: true } },
