@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../../views/HomeView.vue'
 import LoginView from '../components/LoginView.vue'
 import RegisterView from '../components/RegisterView.vue'
+import ConfirmaUserView from '../components/ConfirmaUserView.vue'
 import DashboardView from '../components/DashboardView.vue'
 import LibrosView from '../components/LibrosView.vue'
 import PeliculasView from '../components/PeliculasView.vue'
@@ -17,27 +18,14 @@ const router = createRouter({
     { path: '/', name: 'home', component: HomeView },
     { path: '/login', name: 'login', component: LoginView },
     { path: '/register', name: 'register', component: RegisterView },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: DashboardView,
-      meta: { requiresAuth: true },
-    },
+    { path: '/register', name: 'register', component: RegisterView },
+    { path: '/confirmar/:mail/:token', name: 'confirma', component: ConfirmaUserView, props: true },
+    { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
     { path: '/libros', name: 'libros', component: LibrosView, meta: { requiresAuth: true } },
-    {
-      path: '/peliculas',
-      name: 'peliculas',
-      component: PeliculasView,
-      meta: { requiresAuth: true },
-    },
+    { path: '/peliculas', name: 'peliculas', component: PeliculasView, meta: { requiresAuth: true } },
     { path: '/series', name: 'series', component: SeriesView, meta: { requiresAuth: true } },
     { path: '/mi-lista', name: 'mi-lista', component: MiListaView, meta: { requiresAuth: true } },
-    {
-      path: '/estadisticas',
-      name: 'estadisticas',
-      component: EstadisticasView,
-      meta: { requiresAuth: true },
-    },
+    { path: '/estadisticas', name: 'estadisticas', component: EstadisticasView, meta: { requiresAuth: true } },
     { path: '/contacto', name: 'contacto', component: ContactoView },
     { path: '/:pathMatch(.*)*', component: NotFoundView }
   ],
