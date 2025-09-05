@@ -235,7 +235,7 @@ const submitForm = async () => {
   loading.value = true;
 
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/user/contacto`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:3000'}/api/user/contacto`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
