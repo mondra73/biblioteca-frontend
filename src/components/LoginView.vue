@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-white flex items-center justify-center px-6 py-12">
-
     <!-- Card -->
     <div class="w-full max-w-md">
       <div class="bg-white shadow-lg border-0 rounded-lg border border-gray-200">
@@ -78,7 +77,6 @@
               <router-link to="/olvide-password" class="text-primary hover:opacity-80 transition-opacity">
                 ¿Olvidaste tu contraseña?
               </router-link>
-
             </div>
 
             <!-- Botón submit -->
@@ -130,13 +128,12 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script setup>
-import { ref, onMounted  } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import api from '../api'; //
+import api from '../api';
 import { useAuthStore } from '../../stores/auth';
 
 const route = useRoute();
@@ -186,14 +183,13 @@ const onSubmit = async () => {
   loading.value = true;
 
   try {
-    const response = await api.post('/user/login', {
+    const response = await api.post('/auth/login', {
       email: email.value,
       password: password.value,
       rememberMe: rememberMe.value
     });
 
     if (response.data.error === null) {
-
       // Pasar la respuesta completa al store
       auth.login(response.data);
 
@@ -215,8 +211,6 @@ const onSubmit = async () => {
 };
 
 const onGoogleLogin = () => {
-  console.log("Iniciando login con Google...");
-  
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
   
   // Redirigir al endpoint de Google OAuth
@@ -230,5 +224,4 @@ onMounted(() => {
     errors.value.email = 'Error en la autenticación con Google. Intenta nuevamente.';
   }
 });
-
 </script>

@@ -17,7 +17,7 @@ async function refreshAccessToken() {
     const response = await axios.post(
       `${API_BASE_URL}/api/refresh-token`,
       {},
-      { withCredentials: true } // importante si usás cookies para refresh
+      { withCredentials: true } 
     )
     const newAccessToken = response.data.accessToken
     if (newAccessToken) {

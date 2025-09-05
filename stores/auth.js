@@ -41,6 +41,9 @@ export const useAuthStore = defineStore('auth', () => {
       const newToken = responseData.data.token
 
       localStorage.setItem('auth-token', newToken)
+      
+      // Configurar el token en las cabeceras de axios
+      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`
 
       try {
         const decodedToken = jwtDecode(newToken)
@@ -60,11 +63,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   const loginWithToken = (token) => {
     localStorage.setItem('auth-token', token);
-    checkAuth(); // Esto actualizará el estado automáticamente
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    checkAuth();
   };
 
   const logout = () => {
     localStorage.removeItem('auth-token')
+    // Eliminar el token de las cabeceras de axios
+    delete api.defaults.headers.common['Authorization']
     isAuthenticated.value = false
     userData.value = null
   }
@@ -72,9 +78,9 @@ export const useAuthStore = defineStore('auth', () => {
   // 🔹 Nueva función para renovar el token
   const refreshAccessToken = async () => {
     try {
-      const res = await api.post('/user/refresh-token') // este endpoint devuelve { token: ... }
+      const res = await api.post('/user/refresh-token') 
       if (res.data.token) {
-        login({ data: { token: res.data.token } }) // Reutilizamos login()
+        login({ data: { token: res.data.token } }) 
         return true
       }
     } catch (err) {

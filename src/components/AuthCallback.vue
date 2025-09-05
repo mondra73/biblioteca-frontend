@@ -23,9 +23,8 @@ onMounted(async () => {
 
   if (token) {
     try {
-      // Usar el método del store si lo agregaste, o directamente:
-      localStorage.setItem('auth-token', token);
-      authStore.checkAuth(); // Esto actualizará el estado del store
+      // Usar el método del store para hacer login con el token
+      authStore.loginWithToken(token);
       
       // Redirigir al dashboard
       router.push('/dashboard');
@@ -34,8 +33,13 @@ onMounted(async () => {
       router.push('/login?error=auth_failed');
     }
   } else {
-    router.push('/login?error=auth_failed');
+    // Si no hay token, verificar si hay un error
+    const error = route.query.error;
+    if (error) {
+      router.push(`/login?error=${error}`);
+    } else {
+      router.push('/login?error=auth_failed');
+    }
   }
 });
-
 </script>

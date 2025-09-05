@@ -24,7 +24,7 @@ const router = createRouter({
     { path: '/olvide-password', name: 'olvide-password', component: OlvidePasswordView },
     { path: '/nuevo-password/:email?/:token?', name: 'nuevo-password', component: NuevoPasswordView, props: true },
     { path: '/confirmar/:mail/:token', name: 'confirma', component: ConfirmaUserView, props: true },
-     { path: '/auth-callback', name: 'auth-callback', component: AuthCallback },
+     { path: '/auth-seccess', name: 'auth-callback', component: AuthCallback },
     { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
     { path: '/libros', name: 'libros', component: LibrosView, meta: { requiresAuth: true } },
     { path: '/peliculas', name: 'peliculas', component: PeliculasView, meta: { requiresAuth: true } },
