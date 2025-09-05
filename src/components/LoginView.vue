@@ -134,11 +134,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted  } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import api from '../api'; //
 import { useAuthStore } from '../../stores/auth';
 
+const route = useRoute();
 const router = useRouter();
 const auth = useAuthStore();
 const email = ref("");
@@ -214,7 +215,20 @@ const onSubmit = async () => {
 };
 
 const onGoogleLogin = () => {
-  console.log("Google login clicked");
-  alert("Google OAuth se implementaría aquí");
+  console.log("Iniciando login con Google...");
+  
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+  
+  // Redirigir al endpoint de Google OAuth
+  window.location.href = `${backendUrl}/auth/google`;
 };
+
+onMounted(() => {
+  // Verificar si hay errores en la URL
+  const error = route.query.error;
+  if (error === 'auth_failed') {
+    errors.value.email = 'Error en la autenticación con Google. Intenta nuevamente.';
+  }
+});
+
 </script>

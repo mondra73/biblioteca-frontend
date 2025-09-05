@@ -6,24 +6,14 @@
           <h3 class="text-lg font-semibold text-cyan-400">Acerca de</h3>
           <p class="text-gray-300 text-sm leading-relaxed">
             Lleva un registro completo de todas las películas, series y libros que has disfrutado.
-            Organiza tu entretenimiento y descubre nuevas recomendaciones.
           </p>
         </div>
 
         <div class="space-y-4">
           <h3 class="text-lg font-semibold text-cyan-400">Enlaces</h3>
           <div class="space-y-2">
-            <a href="#" class="block text-gray-300 hover:text-cyan-400 transition-colors text-sm">
-              Términos de Servicio
-            </a>
-            <a href="#" class="block text-gray-300 hover:text-cyan-400 transition-colors text-sm">
-              Política de Privacidad
-            </a>
-            <a href="#" class="block text-gray-300 hover:text-cyan-400 transition-colors text-sm">
+            <a href="/contacto" class="block text-gray-300 hover:text-cyan-400 transition-colors text-sm">
               Contacto
-            </a>
-            <a href="#" class="block text-gray-300 hover:text-cyan-400 transition-colors text-sm">
-              Ayuda
             </a>
           </div>
         </div>
@@ -31,9 +21,7 @@
         <div class="space-y-4">
           <h3 class="text-lg font-semibold text-cyan-400">Comunidad</h3>
           <div class="space-y-2 text-sm text-gray-300">
-            <p>Miles de usuarios registrados</p>
-            <p>Millones de títulos registrados</p>
-            <p>Recomendaciones personalizadas</p>
+            <p>Miles de usuarios y títulos registrados.</p>
           </div>
         </div>
       </div>

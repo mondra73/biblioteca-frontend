@@ -13,6 +13,7 @@ import MiListaView from '../components/MiListaView.vue'
 import EstadisticasView from '../components/EstadisticasView.vue'
 import ContactoView from '../components/ContactoView.vue'
 import NotFoundView from '../components/NotFoundView.vue'
+import AuthCallback from '../components/AuthCallback.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,7 @@ const router = createRouter({
     { path: '/olvide-password', name: 'olvide-password', component: OlvidePasswordView },
     { path: '/nuevo-password/:email?/:token?', name: 'nuevo-password', component: NuevoPasswordView, props: true },
     { path: '/confirmar/:mail/:token', name: 'confirma', component: ConfirmaUserView, props: true },
+     { path: '/auth-callback', name: 'auth-callback', component: AuthCallback },
     { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
     { path: '/libros', name: 'libros', component: LibrosView, meta: { requiresAuth: true } },
     { path: '/peliculas', name: 'peliculas', component: PeliculasView, meta: { requiresAuth: true } },

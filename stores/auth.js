@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { jwtDecode } from 'jwt-decode'
-import api from '../src/api.js' 
+import api from '../src/api.js'
 
 export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
@@ -58,6 +58,11 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const loginWithToken = (token) => {
+    localStorage.setItem('auth-token', token);
+    checkAuth(); // Esto actualizará el estado automáticamente
+  };
+
   const logout = () => {
     localStorage.removeItem('auth-token')
     isAuthenticated.value = false
@@ -88,7 +93,8 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     checkAuth,
     login,
+    loginWithToken,
     logout,
-    refreshAccessToken, // ✅ exportamos la nueva función
+    refreshAccessToken, 
   }
 })
