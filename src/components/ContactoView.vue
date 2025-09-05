@@ -117,8 +117,11 @@
             <!-- Botón -->
             <button type="submit"
               class="w-full py-3 px-4 rounded-md font-medium transition-colors bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
-              :disabled="loading">
-              <span>{{ loading ? 'Enviando...' : 'Enviar mensaje' }}</span>
+              :disabled="loading || cooldownTimer">
+              <span v-if="cooldownTimer">Espera {{ Math.floor(timeLeft / 60) }}:{{ (timeLeft %
+                60).toString().padStart(2, '0') }}</span>
+              <span v-else-if="loading">Enviando...</span>
+              <span v-else>Enviar mensaje</span>
               <svg v-if="loading" class="animate-spin -ml-1 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor"
@@ -253,9 +256,17 @@ const submitForm = async () => {
       form.telefono = '';
       form.asunto = '';
       form.mensaje = '';
+
+      // Guardar timestamp del último envío exitoso
+      localStorage.setItem('lastContactSubmit', Date.now().toString());
     } else {
       errorMessage.value = data.message || 'Error al enviar el mensaje';
       errorModal.value = true;
+
+      // Si es error 429 (rate limit), iniciar contador
+      if (response.status === 429) {
+        startCooldown(5 * 60); // 5 minutos en segundos
+      }
     }
   } catch (error) {
     console.error('Error:', error);
