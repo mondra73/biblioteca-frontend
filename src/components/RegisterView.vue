@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-white flex items-center justify-center px-6 py-12">
-    
+
     <!-- Card -->
     <div class="w-full max-w-md">
       <div class="bg-white shadow-lg border-0 rounded-lg border border-gray-200">
@@ -164,7 +164,8 @@
     </div>
 
     <!-- Modal de Registro Exitoso -->
-    <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" @click.self="closeModal">
+    <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      @click.self="closeModal">
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <div class="text-center">
           <!-- Ícono de éxito -->
@@ -186,7 +187,7 @@
 
           <!-- Botón -->
           <div class="mt-6">
-            <button @click="closeModal" 
+            <button @click="closeModal"
               class="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors">
               Aceptar
             </button>
@@ -202,6 +203,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import api from '../api';
 
+const route = useRoute();
 const router = useRouter();
 const name = ref("");
 const email = ref("");
@@ -274,9 +276,9 @@ const validateConfirmPassword = (password, confirmPassword) => {
 const onSubmit = async () => {
   errors.value = {
     name: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   };
 
   let hasErrors = false;
@@ -311,17 +313,27 @@ const onSubmit = async () => {
   loading.value = true;
 
   try {
-    const response = await api.post('/user/register', {
+    const payload = {
       name: name.value,
       email: email.value,
       password1: password.value,
       password2: confirmPassword.value
-    });
+    };
+
+    // ✅ SI VIENE DE GOOGLE, agregar datos adicionales
+    const googleUser = route.query.googleUser;
+    if (googleUser) {
+      const userData = JSON.parse(decodeURIComponent(googleUser));
+      payload.googleId = userData.googleId;
+      payload.authProvider = 'google';
+      payload.avatar = userData.avatar;
+    }
+
+    const response = await api.post('/auth/register', payload);
 
     if (response.data.error === null) {
       showSuccessModal.value = true;
     } else {
-      // Error del servidor
       errors.value.email = response.data.error;
     }
   } catch (error) {
@@ -341,9 +353,28 @@ const onGoogleLogin = () => {
   alert("Google OAuth se implementaría aquí");
 };
 
-// Event listeners para teclas
 onMounted(() => {
-  document.addEventListener('keydown', handleEscapeKey);
+  const googleUser = route.query.googleUser;
+  const fromGoogle = route.query.from === 'google';
+
+  if (fromGoogle && googleUser) {
+    try {
+      const userData = JSON.parse(decodeURIComponent(googleUser));
+
+      // Autorellenar formulario con datos de Google
+      name.value = userData.name;
+      email.value = userData.email;
+
+      // Deshabilitar edición de email (viene verificado de Google)
+      document.querySelector('input[type="email"]').setAttribute('readonly', true);
+
+      // Mostrar mensaje informativo
+      console.log('Usuario de Google detectado. Complete el registro.');
+
+    } catch (error) {
+      console.error('Error parsing Google user data:', error);
+    }
+  }
 });
 
 onUnmounted(() => {

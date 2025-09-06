@@ -135,8 +135,10 @@ import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import api from '../api';
 import { useAuthStore } from '../../stores/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, getRedirectResult } from 'firebase/auth';
 
 const route = useRoute();
+const authStore = useAuthStore();
 const router = useRouter();
 const auth = useAuthStore();
 const email = ref("");
@@ -210,11 +212,88 @@ const onSubmit = async () => {
   }
 };
 
-const onGoogleLogin = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+onMounted(async () => {
+  try {
+    const auth = getAuth();
+    const result = await getRedirectResult(auth);
 
-  // Redirigir al endpoint de Google OAuth
-  window.location.href = `${backendUrl}/api/auth/google`;
+    if (result) {
+      // El usuario volvió del redirect de Google
+      const user = result.user;
+      const idToken = await user.getIdToken();
+
+      console.log('Token obtenido via redirect:', idToken);
+
+      // Enviar el token a tu backend
+      const response = await api.post('/auth/google/firebase', {
+        idToken: idToken
+      });
+
+      if (response.data.error === null) {
+        useAuthStore().login(response.data);
+        router.push('/dashboard');
+      }
+    }
+  } catch (error) {
+    console.error('Error en redirect result:', error);
+  }
+});
+
+// ✅ NUEVA función con redirect
+const onGoogleLogin = async () => {
+  try {
+    loading.value = true;
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+
+    provider.addScope('email');
+    provider.addScope('profile');
+
+    const result = await signInWithPopup(auth, provider);
+    const idToken = await result.user.getIdToken();
+
+    const response = await api.post('/auth/google/firebase', {
+      idToken: idToken
+    });
+
+    // ✅ MANEJO DEL NUEVO ERROR "USER_NOT_REGISTERED"
+    if (response.data.error === "USER_NOT_REGISTERED") {
+      // Redirigir a registro con los datos de Google
+      router.push({
+        path: '/register',
+        query: {
+          googleUser: encodeURIComponent(JSON.stringify(response.data.userData)),
+          from: 'google'
+        }
+      });
+      return;
+    }
+
+    if (response.data.error === null) {
+      authStore.login(response.data);
+      router.push('/dashboard');
+    } else {
+      errors.value.email = response.data.error;
+    }
+
+  } catch (error) {
+    console.error('Error:', error);
+
+    // ✅ Capturar error de redirección para registro
+    if (error.response?.data?.error === "USER_NOT_REGISTERED") {
+      router.push({
+        path: '/register',
+        query: {
+          googleUser: encodeURIComponent(JSON.stringify(error.response.data.userData)),
+          from: 'google'
+        }
+      });
+    } else {
+      errors.value.email = 'Error en autenticación con Google';
+    }
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(() => {

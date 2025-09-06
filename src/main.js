@@ -1,7 +1,9 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/index.js'
+import { initializeApp } from 'firebase/app'
 import { createPinia } from 'pinia'
+
 import ModalExitoView from './components/ModalExitoView.vue'
 import ModalDetalleLibroView from './components/ModalDetalleLibroView.vue'
 import ModalEditarLibroView from './components/ModalEditarLibroView.vue'
@@ -18,12 +20,24 @@ import ModalAgregarSerieView from './components/ModalAgregarSerieView.vue'
 
 import './assets/main.css'
 
+const firebaseConfig = {
+  apiKey: 'AIzaSyCvjsELbAVDZE6DfsbT8exczI3ias9S9us',
+  authDomain: 'biblioteca-multimedia-faaae.firebaseapp.com',
+  projectId: 'biblioteca-multimedia-faaae',
+  storageBucket: 'biblioteca-multimedia-faaae.firebasestorage.app',
+  messagingSenderId: '1011569682793',
+  appId: '1:1011569682793:web:da4d7963dc600ddeedf5f8',
+  measurementId: 'G-P3J1CF0ZV5',
+}
+
+initializeApp(firebaseConfig)
+
 const app = createApp(App)
-
 const pinia = createPinia()
-app.use(pinia)
 
+app.use(pinia)
 app.use(router)
+
 app.component('ModalExitoView', ModalExitoView)
 app.component('ModalDetalleLibro', ModalDetalleLibroView)
 app.component('ModalEditarLibro', ModalEditarLibroView)
