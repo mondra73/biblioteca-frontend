@@ -212,9 +212,9 @@ const onSubmit = async () => {
 
 const onGoogleLogin = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
-  
+
   // Redirigir al endpoint de Google OAuth
-  window.location.href = `${backendUrl}/auth/google`;
+  window.location.href = `${backendUrl}/api/auth/google`;
 };
 
 onMounted(() => {
