@@ -258,12 +258,15 @@ const onGoogleLogin = async () => {
 
     // ✅ MANEJO DEL NUEVO ERROR "USER_NOT_REGISTERED"
     if (response.data.error === "USER_NOT_REGISTERED") {
-      // Redirigir a registro con los datos de Google
+      // Obtener el token actual antes de redirigir
+      const idToken = await result.user.getIdToken();
+
       router.push({
         path: '/register',
         query: {
           googleUser: encodeURIComponent(JSON.stringify(response.data.userData)),
-          from: 'google'
+          from: 'google',
+          idToken: idToken // ✅ Pasar el token
         }
       });
       return;

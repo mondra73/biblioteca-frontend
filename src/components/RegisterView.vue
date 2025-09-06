@@ -134,8 +134,8 @@
             </div>
 
             <!-- Google login -->
-            <button type="button" @click="onGoogleLogin"
-              class="w-full mt-4 py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center border border-border bg-transparent text-foreground hover:bg-accent">
+            <button type="button" @click="onGoogleLogin" v-if="route.query.from !== 'google'" class="w-full mt-4 py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center
+              border border-border bg-transparent text-foreground hover:bg-accent">
               <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path fill="currentColor"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -148,49 +148,49 @@
               </svg>
               Continuar con Google
             </button>
-          </div>
 
-          <!-- Login -->
-          <div class="mt-6 text-center">
-            <p class="text-muted-foreground text-sm">
-              ¿Ya tienes una cuenta?
-              <button @click="goToLogin" class="text-primary hover:opacity-80 transition-opacity font-medium ml-1">
-                Inicia sesión aquí
-              </button>
-            </p>
+            <!-- Login -->
+            <div class="mt-6 text-center">
+              <p class="text-muted-foreground text-sm">
+                ¿Ya tienes una cuenta?
+                <button @click="goToLogin" class="text-primary hover:opacity-80 transition-opacity font-medium ml-1">
+                  Inicia sesión aquí
+                </button>
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Modal de Registro Exitoso -->
-    <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-      @click.self="closeModal">
-      <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <div class="text-center">
-          <!-- Ícono de éxito -->
-          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-            <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-          </div>
+      <!-- Modal de Registro Exitoso -->
+      <div v-if="showSuccessModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" @click.self="closeModal">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+          <div class="text-center">
+            <!-- Ícono de éxito -->
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+              <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
 
-          <!-- Mensaje principal -->
-          <h3 class="mt-4 text-lg font-medium text-gray-900">
-            ¡Registro exitoso!
-          </h3>
+            <!-- Mensaje principal -->
+            <h3 class="mt-4 text-lg font-medium text-gray-900">
+              ¡Registro exitoso!
+            </h3>
 
-          <!-- Mensaje secundario -->
-          <p class="mt-2 text-sm text-gray-500">
-            Revisa tu email para confirmar tu cuenta y comenzar a disfrutar de la plataforma.
-          </p>
+            <!-- Mensaje secundario -->
+            <p class="mt-2 text-sm text-gray-500">
+              Revisa tu email para confirmar tu cuenta y comenzar a disfrutar de la plataforma.
+            </p>
 
-          <!-- Botón -->
-          <div class="mt-6">
-            <button @click="closeModal"
-              class="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors">
-              Aceptar
-            </button>
+            <!-- Botón -->
+            <div class="mt-6">
+              <button @click="closeModal"
+                class="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors">
+                Aceptar
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -201,10 +201,12 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from '../../stores/auth';
 import api from '../api';
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 const name = ref("");
 const email = ref("");
 const password = ref("");
@@ -220,10 +222,6 @@ const errors = ref({
   password: "",
   confirmPassword: "",
 });
-
-const goBack = () => {
-  router.push('/');
-};
 
 const goToLogin = () => {
   router.push('/login');
@@ -353,6 +351,7 @@ const onGoogleLogin = () => {
   alert("Google OAuth se implementaría aquí");
 };
 
+
 onMounted(() => {
   const googleUser = route.query.googleUser;
   const fromGoogle = route.query.from === 'google';
@@ -361,21 +360,73 @@ onMounted(() => {
     try {
       const userData = JSON.parse(decodeURIComponent(googleUser));
 
-      // Autorellenar formulario con datos de Google
       name.value = userData.name;
       email.value = userData.email;
 
-      // Deshabilitar edición de email (viene verificado de Google)
-      document.querySelector('input[type="email"]').setAttribute('readonly', true);
+      const emailInput = document.querySelector('input[type="email"]');
+      if (emailInput) emailInput.setAttribute('readonly', true);
 
-      // Mostrar mensaje informativo
-      console.log('Usuario de Google detectado. Complete el registro.');
+      console.log('Usuario de Google detectado. Registrando automáticamente...');
+
+      // ✅ Pasar el token a la función
+      setTimeout(() => {
+        onSubmitAutoRegister(userData);
+      }, 1000);
 
     } catch (error) {
       console.error('Error parsing Google user data:', error);
     }
   }
+
+  document.addEventListener('keydown', handleEscapeKey);
 });
+
+// ✅ NUEVA función para registro automático
+const onSubmitAutoRegister = async (userData) => {
+  loading.value = true;
+
+  try {
+    const payload = {
+      name: userData.name,
+      email: userData.email,
+      password1: "temp_password_123",
+      password2: "temp_password_123",
+      googleId: userData.googleId,
+      authProvider: 'google',
+      avatar: userData.avatar
+    };
+
+    // 1. Primero registrar el usuario
+    const registerResponse = await api.post('/auth/register', payload);
+
+    if (registerResponse.data.error === null) {
+      // 2. Usar el token que viene por query para login
+      const idToken = route.query.idToken;
+
+      if (idToken) {
+        const loginResponse = await api.post('/auth/google/firebase', {
+          idToken: idToken
+        });
+
+        if (loginResponse.data.error === null) {
+          authStore.login(loginResponse.data);
+          router.push('/dashboard');
+          return;
+        }
+      }
+
+      showSuccessModal.value = true;
+    } else {
+      errors.value.email = registerResponse.data.error;
+    }
+  } catch (error) {
+    console.error('Error en registro automático:', error);
+    errors.value.email = 'Error en registro automático';
+  } finally {
+    loading.value = false;
+  }
+};
+
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleEscapeKey);
