@@ -1,7 +1,7 @@
 const CACHE_NAME = 'biblioteca-cache-v3' // ✅ Incrementé la versión
 
 // Estrategia de cache dinámico
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   console.log('🔄 Service Worker instalado - saltando espera')
   self.skipWaiting() // ✅ Fuerza la activación inmediata
 })

@@ -329,6 +329,17 @@ onMounted(() => {
   window.addEventListener('storage', handleStorageChange)
   window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
 
+  // ✅ VERIFICAR SI LA APP YA ESTÁ INSTALADA
+  const isAppInstalled = window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true ||
+    document.referrer.includes('android-app://')
+
+  if (isAppInstalled) {
+    console.log('📱 App ya está instalada - ocultando botón')
+    showInstallButton.value = false
+    deferredPrompt.value = null
+  }
+
   // ✅ AGREGAR ESTO - Forzar verificación después de 3 segundos
   setTimeout(() => {
     if (!deferredPrompt.value) {
