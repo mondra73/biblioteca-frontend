@@ -31,45 +31,50 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event
+  const url = new URL(request.url)
 
-  // ✅ Solo cachear requests GET
-  if (request.method !== 'GET') return
+  // ✅ NO CACHEAR ICONOS - siempre servirlos frescos
+  if (
+    url.pathname.includes('portada1.png') ||
+    url.pathname.includes('icon') ||
+    url.pathname.includes('favicon')
+  ) {
+    console.log('🔄 Sirviendo icono fresco (no cachear):', request.url)
+    return fetch(request) // ← Servir siempre fresco, sin cache
+  }
+
+  // ✅ IGNORAR extensiones de Chrome y otros esquemas
+  if (
+    request.method !== 'GET' ||
+    !request.url.startsWith('http') ||
+    request.url.includes('chrome-extension') ||
+    request.url.includes('localhost')
+  ) {
+    return
+  }
 
   event.respondWith(
-    caches
-      .match(request)
-      .then((cachedResponse) => {
-        // ✅ Devuelve cacheado si existe
-        if (cachedResponse) {
-          console.log('📦 Sirviendo desde cache:', request.url)
-          return cachedResponse
-        }
-
-        // ✅ Sino, fetch y cachea
-        return fetch(request).then((networkResponse) => {
-          // Solo cachear responses válidas
-          if (
-            !networkResponse ||
-            networkResponse.status !== 200 ||
-            networkResponse.type !== 'basic'
-          ) {
-            return networkResponse
+    caches.match(request).then((cachedResponse) => {
+      // ✅ ESTRATEGIA: Network First para todo
+      return fetch(request)
+        .then((networkResponse) => {
+          // Cachear solo si es successful y NO es un icono
+          if (networkResponse.status === 200 && !request.url.includes('portada1.png')) {
+            const responseToCache = networkResponse.clone()
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache)
+            })
           }
-
-          const responseToCache = networkResponse.clone()
-          caches.open(CACHE_NAME).then((cache) => {
-            console.log('💾 Cacheando nuevo recurso:', request.url)
-            cache.put(request, responseToCache)
-          })
-
           return networkResponse
         })
-      })
-      .catch(() => {
-        // ✅ Fallback para errores de red
-        console.log('❌ Error de red, sirviendo fallback')
-        return caches.match('/') || new Response('Offline - Biblioteca Multimedia')
-      }),
+        .catch((error) => {
+          // Fallback al cache solo si no es un icono
+          if (cachedResponse && !request.url.includes('portada1.png')) {
+            return cachedResponse
+          }
+          throw error
+        })
+    }),
   )
 })
 
