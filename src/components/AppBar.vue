@@ -41,6 +41,12 @@
               Iniciar Sesión
             </span>
           </button>
+
+          <button v-if="showInstallButton" @click="instalarApp"
+            class="ml-4 bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition-colors">
+            Instalar App
+          </button>
+
         </nav>
 
         <!-- Navegación Desktop - Usuario autenticado -->
@@ -223,6 +229,12 @@
 
         <!-- Menú Hamburguesa Mobile - Usuario NO Autenticado -->
         <div v-else class="md:hidden">
+
+          <button v-if="showInstallButton" @click="instalarApp"
+            class="ml-4 bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition-colors">
+            Instalar App
+          </button>
+          
           <button @click="isMenuOpen = !isMenuOpen"
             class="p-2 rounded-xl text-gray-700 hover:bg-gray-100 hover:text-primary transition-all duration-300 group">
             <svg class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" fill="none"
@@ -270,19 +282,44 @@ const router = useRouter()
 const auth = useAuthStore()
 const isMenuOpen = ref(false)
 
+const deferredPrompt = ref(null)
+const showInstallButton = ref(false)
+
 const logout = () => {
   auth.logout()
   // Opcional: redirigir al home
   router.push('/')
 }
 
+const instalarApp = async () => {
+  if (!deferredPrompt.value) return
+  deferredPrompt.value.prompt() // Mostramos el prompt de instalación
+  const choiceResult = await deferredPrompt.value.userChoice
+  if (choiceResult.outcome === 'accepted') {
+    console.log('App instalada')
+  } else {
+    console.log('Usuario canceló la instalación')
+  }
+  deferredPrompt.value = null
+  showInstallButton.value = false
+}
+
+const handleBeforeInstallPrompt = (e) => {
+  e.preventDefault()
+  deferredPrompt.value = e
+  showInstallButton.value = true
+}
+
+
 onMounted(() => {
   auth.checkAuth()
   window.addEventListener('storage', handleStorageChange)
+  window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
 })
 
 onUnmounted(() => {
   window.removeEventListener('storage', handleStorageChange)
+  window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
 })
 
 const handleStorageChange = () => {

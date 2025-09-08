@@ -52,4 +52,17 @@ app.component('ModalAgregarLibro', ModalAgregarLibroView)
 app.component('ModalAgregarPelicula', ModalAgregarPeliculaView)
 app.component('ModalAgregarSerie', ModalAgregarSerieView)
 
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log("Service Worker registrado con éxito:", registration);
+      })
+      .catch((error) => {
+        console.log("Error al registrar el Service Worker:", error);
+      });
+  });
+}
+
 app.mount('#app')
