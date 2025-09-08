@@ -308,10 +308,26 @@ onMounted(() => {
   window.addEventListener('storage', handleStorageChange)
   window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
 
-  // ✅ AGREGA ESTO PARA DEBUG:
-  window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('🎯 beforeinstallprompt event captured!', e)
-  }, { once: true })
+  // ✅ AGREGAR ESTO - Forzar verificación después de 3 segundos
+  setTimeout(() => {
+    if (!deferredPrompt.value) {
+      console.log('🔍 Buscando evento beforeinstallprompt manualmente...')
+
+      // Disparar manualmente la verificación
+      const event = new Event('beforeinstallprompt', {
+        bubbles: true,
+        cancelable: true
+      })
+      window.dispatchEvent(event)
+
+      // Alternativa: verificar si ya está disponible
+      if (window.deferredPrompt) {
+        deferredPrompt.value = window.deferredPrompt
+        showInstallButton.value = true
+        console.log('✅ deferredPrompt encontrado en window')
+      }
+    }
+  }, 3000)
 })
 
 onUnmounted(() => {
