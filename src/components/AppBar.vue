@@ -282,14 +282,7 @@ const router = useRouter()
 const auth = useAuthStore()
 const isMenuOpen = ref(false)
 
-const deferredPrompt = ref(null)
 const showInstallButton = ref(false)
-
-const logout = () => {
-  auth.logout()
-  // Opcional: redirigir al home
-  router.push('/')
-}
 
 const instalarApp = async () => {
   if (!deferredPrompt.value) return
