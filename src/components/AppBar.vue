@@ -307,6 +307,11 @@ onMounted(() => {
   auth.checkAuth()
   window.addEventListener('storage', handleStorageChange)
   window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+
+  // ✅ AGREGA ESTO PARA DEBUG:
+  window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('🎯 beforeinstallprompt event captured!', e)
+  }, { once: true })
 })
 
 onUnmounted(() => {
