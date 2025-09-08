@@ -285,22 +285,43 @@ const showInstallButton = ref(false)
 const deferredPrompt = ref(null)  // ✅ Cambiado a ref
 
 const instalarApp = async () => {
-  if (!deferredPrompt.value) return
-  deferredPrompt.value.prompt()
-  const choiceResult = await deferredPrompt.value.userChoice
-  if (choiceResult.outcome === 'accepted') {
-    console.log('App instalada')
-  } else {
-    console.log('Usuario canceló la instalación')
+  if (!deferredPrompt.value) {
+    console.log('❌ No hay deferredPrompt disponible')
+    return
   }
-  deferredPrompt.value = null
-  showInstallButton.value = false
+
+  try {
+    // Mostrar el prompt de instalación
+    const result = await deferredPrompt.value.prompt()
+    console.log('📱 Usuario respondió:', result)
+
+    if (result.outcome === 'accepted') {
+      console.log('✅ App instalada exitosamente')
+    } else {
+      console.log('❌ Usuario canceló la instalación')
+    }
+
+  } catch (error) {
+    console.error('💥 Error al instalar:', error)
+  } finally {
+    // Limpiar para futuras instalaciones
+    deferredPrompt.value = null
+    showInstallButton.value = false
+  }
 }
 
 const handleBeforeInstallPrompt = (e) => {
-  deferredPrompt.value = e;  // ✅ Usando .value
-  console.log('✅ PWA se puede instalar')
+  console.log('🎯 Evento beforeinstallprompt capturado', e)
+
+  // Guardar el evento para usarlo después
+  deferredPrompt.value = e
+
+  // Prevenir que Chrome muestre su banner automático
+  e.preventDefault()
+
+  // Mostrar TU botón personalizado
   showInstallButton.value = true
+  console.log('✅ Botón de instalación activado')
 }
 
 onMounted(() => {
