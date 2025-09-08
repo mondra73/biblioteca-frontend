@@ -281,12 +281,12 @@ import { onMounted, onUnmounted, ref } from 'vue'
 const router = useRouter()
 const auth = useAuthStore()
 const isMenuOpen = ref(false)
-
 const showInstallButton = ref(false)
+const deferredPrompt = ref(null)  // ✅ Cambiado a ref
 
 const instalarApp = async () => {
   if (!deferredPrompt.value) return
-  deferredPrompt.value.prompt() // Mostramos el prompt de instalación
+  deferredPrompt.value.prompt()
   const choiceResult = await deferredPrompt.value.userChoice
   if (choiceResult.outcome === 'accepted') {
     console.log('App instalada')
@@ -297,17 +297,11 @@ const instalarApp = async () => {
   showInstallButton.value = false
 }
 
-let deferredPrompt = null;
-
 const handleBeforeInstallPrompt = (e) => {
-
-
-  deferredPrompt = e;
-
-  console.log('✅ PWA se puede instalar');
-  showInstallButton.value = true;
+  deferredPrompt.value = e;  // ✅ Usando .value
+  console.log('✅ PWA se puede instalar')
+  showInstallButton.value = true
 }
-
 
 onMounted(() => {
   auth.checkAuth()
