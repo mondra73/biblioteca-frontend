@@ -21,7 +21,7 @@
                 <!-- Imagen de not found -->
                 <div class="mb-8 flex justify-center">
                     <img src="../../public/not-found.png" alt="Página no encontrada"
-                        class="max-w-full max-h-96 object-contain" <!-- Se adapta al contenedor -->
+                        class="max-w-full max-h-96 object-contain" 
                     />
                 </div>
 
