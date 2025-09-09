@@ -31,6 +31,7 @@
       <!-- Copyright -->
       <div class="text-center text-gray-400 text-sm">
         <p>&copy; 2025 Biblioteca Multimedia. Todos los derechos reservados.</p>
+        <p>Desarrollado por Javier Espinosa</p>
       </div>
     </div>
   </footer>
