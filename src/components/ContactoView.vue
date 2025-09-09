@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-white flex items-center justify-center px-6 py-12">
     <div class="w-full max-w-2xl">
-      <div class="bg-white shadow-lg border-0 rounded-lg border border-gray-200">
+      <div class="bg-card shadow-lg rounded-lg border border-gray-200">
         <!-- Encabezado -->
         <div class="text-center pb-8 pt-6 px-6">
           <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -200,6 +200,8 @@ const loading = ref(false);
 const successModal = ref(false);
 const errorModal = ref(false);
 const errorMessage = ref('');
+const mensaje = ref('')
+const cooldownTimer = ref(0) 
 
 const validateForm = () => {
   let isValid = true;

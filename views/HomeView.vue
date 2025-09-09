@@ -38,8 +38,9 @@
     </section>
 
     <!-- Features Section -->
-    <section class="px-6 py-16 bg-card">
-      <div class="max-w-6xl mx-auto">
+    <section class="relative px-6 py-16 overflow-hidden">
+      <div class="absolute inset-0 bg-primary/5"></div>
+      <div class="relative max-w-6xl mx-auto">
         <h2 class="text-3xl font-bold text-center text-card-foreground mb-12">¿Qué puedes hacer?</h2>
         <div class="grid md:grid-cols-3 gap-8">
           <div class="bg-card p-8 text-center rounded-lg border-0 shadow-sm">

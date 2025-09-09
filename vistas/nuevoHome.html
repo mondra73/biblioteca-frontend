@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Personal</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-custom-card {
+            background-color: rgba(59, 130, 246, 0.05); /* bg-primary/5 */
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Tu código existente aquí -->
+        
+        <!-- Features Section - MODIFICADA -->
+        <section class="px-6 py-16 bg-white"> <!-- Cambiado a bg-white -->
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-foreground mb-12">¿Qué puedes hacer?</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-custom-card p-8 text-center rounded-lg border-0 shadow-sm">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <rect width="18" height="18" x="3" y="3" rx="2" />
+                                <path d="m7 3 0 18" />
+                                <path d="m17 3 0 18" />
+                                <path d="M14 7h1" />
+                                <path d="M9 7h1" />
+                                <path d="M9 17h1" />
+                                <path d="M14 17h1" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4">Películas y Series</h3>
+                        <p class="text-muted-foreground text-pretty">
+                            Registra todo lo que has visto y mantén una lista de lo que quieres ver próximamente.
+                        </p>
+                    </div>
+
+                    <div class="bg-custom-card p-8 text-center rounded-lg border-0 shadow-sm">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4">Libros</h3>
+                        <p class="text-muted-foreground text-pretty">
+                            Lleva un control de tus lecturas completadas y organiza tu lista de libros pendientes.
+                        </p>
+                    </div>
+
+                    <div class="bg-custom-card p-8 text-center rounded-lg border-0 shadow-sm">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <rect width="20" height="14" x="2" y="3" rx="2" />
+                                <line x1="8" x2="16" y1="21" y2="21" />
+                                <line x1="12" x2="12" y1="17" y2="21" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4">Rankings</h3>
+                        <p class="text-muted-foreground text-pretty">
+                            Compite con otros usuarios y ve quién lidera en cada categoría de entretenimiento.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Resto de tu código aquí -->
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+        
+        createApp({
+            setup() {
+                // Tu lógica de Vue existente
+                const auth = {
+                    isAuthenticated: false
+                };
+                
+                const mostrarModalAgregar = ref(false);
+                const mostrarModalLibro = ref(false);
+                const mostrarModalPelicula = ref(false);
+                const mostrarModalSerie = ref(false);
+                const showModalExito = ref(false);
+                const tipoSeleccionado = ref('');
+                const modalExitoConfig = ref({
+                    titulo: '',
+                    mensaje: ''
+                });
+                
+                // Resto de tu lógica...
+                
+                return {
+                    auth,
+                    mostrarModalAgregar,
+                    mostrarModalLibro,
+                    mostrarModalPelicula,
+                    mostrarModalSerie,
+                    showModalExito,
+                    tipoSeleccionado,
+                    modalExitoConfig,
+                    redirectToDashboard: () => console.log('Redirigiendo al dashboard'),
+                    goToRegister: () => console.log('Redirigiendo a registro'),
+                    abrirFormularioAgregar: () => console.log('Abriendo formulario'),
+                    handleAgregarExitoso: () => console.log('Agregado exitoso')
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
