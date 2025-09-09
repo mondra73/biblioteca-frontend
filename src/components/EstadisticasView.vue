@@ -116,8 +116,12 @@
     </section>
 
     <!-- Personal Statistics -->
-    <section class="px-6 py-16 bg-card">
-      <div class="max-w-4xl mx-auto">
+    <section class="relative px-6 py-16">
+      <!-- Fondo degradado -->
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent opacity-60 blur-3xl">
+      </div>
+
+      <div class="relative max-w-4xl mx-auto">
         <h3 class="text-2xl font-bold text-center text-card-foreground mb-8 flex items-center justify-center gap-2">
           <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -208,8 +212,12 @@
     </section>
 
     <!-- Action Buttons -->
-    <section class="px-6 py-16">
-      <div class="max-w-4xl mx-auto text-center">
+    <section class="relative px-6 py-16">
+      <!-- Fondo degradado -->
+      <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 via-primary/5 to-transparent opacity-60 blur-3xl">
+      </div>
+
+      <div class="relative max-w-4xl mx-auto text-center">
         <h3 class="text-2xl font-bold text-foreground mb-8 text-balance">¿Quieres mejorar tu posición?</h3>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <button @click="mostrarModalAgregar = true"
@@ -417,7 +425,7 @@ const fetchEstadisticasPersonales = async () => {
 // Función para abrir el formulario correspondiente
 const abrirFormularioAgregar = () => {
   mostrarModalAgregar.value = false
-  
+
   switch (tipoSeleccionado.value) {
     case 'libros':
       mostrarModalLibro.value = true
@@ -429,7 +437,7 @@ const abrirFormularioAgregar = () => {
       mostrarModalSerie.value = true
       break
   }
-  
+
   tipoSeleccionado.value = ''
 }
 
@@ -459,7 +467,7 @@ const handleAgregarExitoso = () => {
       mostrarModalSerie.value = false
       break
   }
-  
+
   showModalExito.value = true
   fetchEstadisticasPersonales() // Actualizar estadísticas
   fetchRankings() // Actualizar rankings también

@@ -10,8 +10,9 @@
       </div>
     </section>
 
-    <section class="px-6 pb-16">
-      <div class="max-w-6xl mx-auto">
+    <section class="relative px-6 pb-16 overflow-hidden">
+      <div class="absolute inset-0 bg-primary/5"></div>
+      <div class="relative max-w-6xl mx-auto">
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div
             class="bg-card p-8 text-center rounded-lg border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
@@ -135,8 +136,9 @@
       </div>
     </section>
 
-    <section class="px-6 py-16">
-      <div class="max-w-4xl mx-auto text-center">
+    <section class="relative px-6 py-16 overflow-hidden">
+      <div class="absolute inset-0 bg-primary/5"></div>
+      <div class="relative max-w-4xl mx-auto text-center">
         <h2 class="text-2xl font-bold text-foreground mb-8 text-balance">Acciones Rápidas</h2>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <button @click="mostrarModalAgregar = true"
