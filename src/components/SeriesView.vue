@@ -254,7 +254,6 @@
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 
-// Estado reactivo
 const searchQuery = ref('')
 const showAddSerieModal = ref(false)
 const showModalExitoView = ref(false)
@@ -270,10 +269,8 @@ const selectedSerieId = ref(null)
 const serieAEditar = ref(null)
 const isSearching = ref(false)
 
-// Datos de series desde el backend
 const series = ref([])
 
-// Función para decodificar el token JWT y obtener el ID del usuario
 const getUserIdFromToken = () => {
   try {
     const token = authStore.token
@@ -281,17 +278,14 @@ const getUserIdFromToken = () => {
       throw new Error('No hay token disponible')
     }
 
-    // El token JWT tiene el formato: header.payload.signature
     const payloadBase64 = token.split('.')[1]
     if (!payloadBase64) {
       throw new Error('Token con formato inválido')
     }
 
-    // Decodificar la parte payload del token
     const payloadJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'))
     const payload = JSON.parse(payloadJson)
 
-    // Verificar que el payload contiene el ID
     if (!payload.id) {
       throw new Error('Token no contiene ID de usuario')
     }
@@ -303,14 +297,12 @@ const getUserIdFromToken = () => {
   }
 }
 
-// Paginación
 const pagination = reactive({
   currentPage: 1,
   totalPages: 1,
   totalSeries: 0
 })
 
-// Estadísticas
 const stats = reactive({
   totalWatched: 0,
   thisMonth: 0,
@@ -319,14 +311,12 @@ const stats = reactive({
   totalRealSeries: 0
 })
 
-// Computed: Filtrar series según búsqueda
 const filteredSeries = computed(() => {
   return series.value
 })
 
 let searchTimeout = null
 
-// Métodos
 const fetchRealStats = async () => {
   try {
     const token = authStore.token
@@ -335,12 +325,10 @@ const fetchRealStats = async () => {
       return
     }
 
-    // Obtener el ID del usuario desde el token
     const userId = getUserIdFromToken()
 
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
-    // MODIFICADO: Usar el nuevo endpoint con el ID del usuario
     const response = await fetch(`${API_BASE}/api/admin/user/estadisticas-series/${userId}`, {
       headers: {
         'auth-token': token,
@@ -354,13 +342,11 @@ const fetchRealStats = async () => {
 
     const data = await response.json()
 
-    // Actualizar el total real de series y el promedio real
     stats.totalRealSeries = data.totalSeries
     stats.averageRatingReal = data.promedioRating || null
 
   } catch (err) {
     console.error('Error fetching real stats:', err)
-    // No mostramos error al usuario para no interrumpir la experiencia
   }
 }
 
@@ -376,7 +362,6 @@ const performSearch = async (texto, page = 1) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
-    // Reemplazar espacios con guiones bajos para la URL
     const textoCodificado = texto.replace(/ /g, '_')
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
@@ -390,7 +375,6 @@ const performSearch = async (texto, page = 1) => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
 
-      // Si no hay resultados, es normal, no es un error
       if (response.status === 404 && errorData.mensaje?.includes('No se encontraron')) {
         series.value = []
         pagination.totalSeries = 0
@@ -413,7 +397,6 @@ const performSearch = async (texto, page = 1) => {
     calculateStats(data.series)
 
   } catch (err) {
-    // No mostrar error si es que no hay resultados
     if (!err.message.includes('No se encontraron')) {
       error.value = err.message
     }
@@ -434,7 +417,6 @@ const fetchSeries = async (page = 1) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
-    // Usar la variable de entorno VITE_API_BASE
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
     const response = await fetch(`${API_BASE}/api/admin/user/series?page=${page}`, {
@@ -446,16 +428,13 @@ const fetchSeries = async (page = 1) => {
       cache: 'no-store'
     })
 
-    // Leer la respuesta como texto primero
     const responseText = await response.text()
 
-    // Verificar si es HTML (error)
     if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
       console.error('❌ El servidor devolvió HTML en lugar de JSON')
       throw new Error('Error del servidor: respuesta en formato incorrecto. Status: ' + response.status)
     }
 
-    // Intentar parsear como JSON
     let data
     try {
       data = JSON.parse(responseText)
@@ -468,7 +447,6 @@ const fetchSeries = async (page = 1) => {
       throw new Error(data.error || data.mensaje || `Error ${response.status}: ${response.statusText}`)
     }
 
-    // Éxito - procesar datos
     series.value = data.series
     pagination.currentPage = data.currentPage
     pagination.totalPages = data.totalPages
@@ -476,18 +454,15 @@ const fetchSeries = async (page = 1) => {
 
     calculateStats(data.series)
 
-    // Obtener estadísticas reales después de cargar las series
     await fetchRealStats()
 
   } catch (err) {
     error.value = err.message
     console.error('❌ Error fetching series:', err)
 
-    // Manejar errores de autenticación
     if (err.message.includes('denegado') || err.message.includes('token') ||
       err.message.includes('401') || err.message.includes('403')) {
       authStore.logout()
-      // Redirigir al login después de un breve delay
       setTimeout(() => {
         window.location.href = '/login'
       }, 1000)
@@ -506,7 +481,6 @@ const abrirEdicion = (serie) => {
   selectedSerieId.value = null
 }
 
-// Métodos para mostrar diferentes tipos de éxito
 const mostrarExitoCreacion = () => {
   modalExitoConfig.value = {
     titulo: 'Serie agregada',
@@ -546,10 +520,8 @@ const handleSerieEliminada = (serieId) => {
 }
 
 const calculateStats = (series) => {
-  // Total de series vistas (solo las de esta página)
   stats.totalWatched = series.length
 
-  // Series vistas este mes (solo las de esta página)
   const currentMonth = new Date().getMonth()
   const currentYear = new Date().getFullYear()
   stats.thisMonth = series.filter(serie => {
@@ -557,8 +529,6 @@ const calculateStats = (series) => {
     return serieDate.getMonth() === currentMonth && serieDate.getFullYear() === currentYear
   }).length
 
-  // Promedio de rating (solo series con valoración de esta página)
-  // Este valor se muestra solo si no tenemos el promedio real
   const seriesConRating = series.filter(serie => serie.valuacion !== null && serie.valuacion !== undefined)
   if (seriesConRating.length > 0) {
     const totalRating = seriesConRating.reduce((sum, serie) => sum + serie.valuacion, 0)
@@ -578,7 +548,6 @@ const formatDate = (dateString) => {
 }
 
 const getSerieGradient = (serie) => {
-  // Asignar gradientes basados en el título para consistencia
   const gradients = [
     'from-red-500 to-orange-600',
     'from-blue-500 to-cyan-600',
@@ -588,7 +557,6 @@ const getSerieGradient = (serie) => {
     'from-yellow-500 to-red-600'
   ]
 
-  // Crear un hash simple basado en el título para asignar colores consistentes
   let hash = 0
   for (let i = 0; i < serie.titulo.length; i++) {
     hash = serie.titulo.charCodeAt(i) + ((hash << 5) - hash)
@@ -599,7 +567,6 @@ const getSerieGradient = (serie) => {
 
 const openSerieMenu = (serie) => {
   console.log('Abrir menú para:', serie.titulo)
-  // Aquí podrías mostrar un menú contextual con opciones
 }
 
 const changePage = (newPage) => {
@@ -607,10 +574,8 @@ const changePage = (newPage) => {
     currentPage.value = newPage
 
     if (isSearching.value && searchQuery.value.trim()) {
-      // Si estamos en modo búsqueda, buscar en la página específica
       performSearch(searchQuery.value.trim(), newPage)
     } else {
-      // Si no, cargar página normal
       fetchSeries(newPage)
     }
   }
@@ -639,15 +604,12 @@ onMounted(() => {
 })
 
 watch(searchQuery, (newQuery, oldQuery) => {
-  // Esperar 500ms después de que el usuario deje de escribir
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     if (newQuery.trim() !== oldQuery.trim()) {
       if (newQuery.trim() === '') {
-        // Si la búsqueda está vacía, cargar películas normales
         fetchSeries(1)
       } else {
-        // Si hay texto, realizar búsqueda
         performSearch(newQuery.trim(), 1)
       }
     }

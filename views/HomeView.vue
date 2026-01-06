@@ -195,7 +195,6 @@ import { useAuthStore } from '../stores/auth'
 const router = useRouter()
 const auth = useAuthStore()
 
-// Estados para la autenticación y modales
 const isAuthenticated = ref(false)
 const mostrarModalAgregar = ref(false)
 const mostrarModalLibro = ref(false)
@@ -208,14 +207,10 @@ const modalExitoConfig = ref({
   mensaje: ''
 })
 
-// Función para decodificar el token JWT
 const decodeJWT = (token) => {
   try {
-    // El token JWT tiene 3 partes separadas por puntos: header.payload.signature
     const base64Url = token.split('.')[1]
-    // Reemplazar caracteres específicos de base64url
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-    // Decodificar la cadena base64
     const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
     }).join(''))
@@ -227,7 +222,6 @@ const decodeJWT = (token) => {
   }
 }
 
-// Función para verificar si el usuario está autenticado
 const checkAuthentication = () => {
   const token = localStorage.getItem('auth-token')
 
@@ -235,13 +229,11 @@ const checkAuthentication = () => {
     const decodedToken = decodeJWT(token)
 
     if (decodedToken) {
-      // Verificar si el token ha expirado
       const currentTime = Math.floor(Date.now() / 1000)
       if (decodedToken.exp && decodedToken.exp > currentTime) {
         isAuthenticated.value = true
         return
       } else {
-        // Token expirado, limpiar del localStorage
         localStorage.removeItem('auth-token')
       }
     }
@@ -258,7 +250,6 @@ const goToRegister = () => {
   router.push('/register')
 }
 
-// Función para abrir el formulario correspondiente
 const abrirFormularioAgregar = () => {
   mostrarModalAgregar.value = false
 
@@ -277,9 +268,7 @@ const abrirFormularioAgregar = () => {
   tipoSeleccionado.value = ''
 }
 
-// Función para manejar agregado exitoso
 const handleAgregarExitoso = () => {
-  // Configurar mensaje de éxito según el tipo
   switch (true) {
     case mostrarModalLibro.value:
       modalExitoConfig.value = {
@@ -307,14 +296,12 @@ const handleAgregarExitoso = () => {
   showModalExito.value = true
 }
 
-// Verificar autenticación al montar el componente
 onMounted(() => {
   checkAuthentication()
 })
 </script>
 
 <style>
-/* Estilos personalizados para mantener la apariencia */
 .bg-background {
   background-color: #fff;
 }

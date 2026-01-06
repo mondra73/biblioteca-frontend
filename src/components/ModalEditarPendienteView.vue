@@ -89,7 +89,7 @@ const showConfirmacionGuardar = ref(false)
 const pendienteEditado = reactive({
   titulo: props.pendiente.titulo || '',
   autorDirector: props.pendiente.autorDirector || '',
-  tipo: normalizeTipo(props.pendiente.tipo) || '', // ← Normalizar al cargar
+  tipo: normalizeTipo(props.pendiente.tipo) || '', 
   descripcion: props.pendiente.descripcion || ''
 })
 
@@ -97,7 +97,6 @@ const normalizeTipo = (tipo) => {
   if (!tipo) return ''
 
   const normalized = tipo.toLowerCase()
-  // Mapear variaciones a los valores esperados por el select
   if (normalized === 'pelicula' || normalized === 'película') {
     return 'pelicula'
   }
@@ -137,7 +136,6 @@ const confirmarGuardado = async () => {
     const token = authStore.token
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
-    // ✅ Asegurar que el tipo esté normalizado antes de enviar
     const tipoNormalizado = normalizeTipo(pendienteEditado.tipo)
 
     const response = await fetch(`${API_BASE}/api/admin/user/pendiente/${props.pendiente._id}`, {
@@ -149,7 +147,7 @@ const confirmarGuardado = async () => {
       body: JSON.stringify({
         titulo: pendienteEditado.titulo,
         autorDirector: pendienteEditado.autorDirector,
-        tipo: tipoNormalizado, // ← Usar el tipo normalizado
+        tipo: tipoNormalizado, 
         descripcion: pendienteEditado.descripcion
       })
     })

@@ -25,7 +25,7 @@
           </p>
         </div>
 
-        <!-- Mensaje de éxito (AHORA ARRIBA DEL FORMULARIO) -->
+        <!-- Mensaje de éxito  -->
         <div v-if="successMessage" class="mb-6 p-4 bg-green-100 border border-green-200 rounded-lg text-center">
           <div class="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center mx-auto mb-3">
             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@
           </button>
         </div>
 
-        <!-- Formulario (se oculta cuando hay éxito) -->
+        <!-- Formulario  -->
         <form v-if="!successMessage" @submit.prevent="handleSubmit" class="space-y-6">
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
@@ -125,12 +125,10 @@ const userEmail = ref('')
 const userId = ref('')
 const isTokenValid = ref(true)
 
-// Función para redireccionar al login
 const redirectToLogin = () => {
   router.push('/login')
 }
 
-// Función para decodificar JWT (sin verificación de firma)
 const decodeJWT = (token) => {
   try {
     const base64Url = token.split('.')[1]
@@ -146,9 +144,7 @@ const decodeJWT = (token) => {
   }
 }
 
-// Obtener email y validar token al montar el componente
 onMounted(() => {
-  // Obtener el token de la URL
   const pathParts = route.path.split('/')
   const tokenIndex = pathParts.findIndex(part => part === 'nuevo-password') + 2
 
@@ -156,17 +152,13 @@ onMounted(() => {
     const token = pathParts[tokenIndex]
 
     try {
-      // Decodificar el token
       const decodedToken = decodeJWT(token)
 
       if (decodedToken && decodedToken.purpose === 'password_reset') {
-        // Verificar si el token ha expirado
         const currentTime = Math.floor(Date.now() / 1000)
         if (decodedToken.exp && decodedToken.exp > currentTime) {
-          // Token válido, obtener el ID de usuario
           userId.value = decodedToken.id
 
-          // Obtener el email de la URL (está en la posición anterior al token)
           const emailIndex = tokenIndex - 1
           if (emailIndex < pathParts.length) {
             userEmail.value = decodeURIComponent(pathParts[emailIndex])
@@ -181,11 +173,9 @@ onMounted(() => {
     }
   }
 
-  // Si llegamos aquí, el token es inválido
   isTokenValid.value = false
 })
 
-// Validación en tiempo real - SOLO longitud mínima de 6 caracteres
 watch(password, (newVal) => {
   if (newVal.length < 6) {
     passwordError.value = 'La contraseña debe tener al menos 6 caracteres.'
@@ -201,7 +191,6 @@ watch([password, confirmPassword], () => {
     confirmPasswordError.value = ''
   }
 
-  // Limpiar mensajes de error al cambiar los campos
   if (errorMessage.value) {
     errorMessage.value = ''
   }
@@ -231,11 +220,10 @@ async function handleSubmit() {
 
   loading.value = true
   errorMessage.value = ''
-  passwordError.value = '' // Limpiar mensajes de error al enviar
-  confirmPasswordError.value = '' // Limpiar mensajes de error al enviar
+  passwordError.value = '' 
+  confirmPasswordError.value = '' 
 
   try {
-    // Realizar la petición al endpoint (CORREGIDA LA RUTA)
     const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000'
     const response = await fetch(`${API_BASE}/api/user/restablecer-password`, {
       method: 'POST',
@@ -255,7 +243,6 @@ async function handleSubmit() {
       throw new Error(data.error || 'Error al cambiar la contraseña')
     }
 
-    // Éxito - mostrar mensaje de éxito y ocultar formulario
     successMessage.value = `¡Contraseña actualizada con éxito, ${data.nombre || ''}!`
 
   } catch (error) {
@@ -268,7 +255,6 @@ async function handleSubmit() {
 </script>
 
 <style>
-/* Colores primarios extendidos si quieres usarlos fuera de Tailwind */
 .text-primary {
   color: #3b82f6;
 }

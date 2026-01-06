@@ -100,13 +100,11 @@ const authStore = useAuthStore()
 const loading = ref(false)
 const error = ref(null)
 
-// Crear copia editable de la película
 const peliculaEditada = reactive({
   ...props.pelicula,
   fecha: props.pelicula.fecha ? new Date(props.pelicula.fecha).toISOString().split('T')[0] : ''
 })
 
-// Fecha actual para limitar el input de fecha
 const today = computed(() => {
   return new Date().toISOString().split('T')[0]
 })

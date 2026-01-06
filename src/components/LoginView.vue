@@ -192,10 +192,8 @@ const onSubmit = async () => {
     });
 
     if (response.data.error === null) {
-      // Pasar la respuesta completa al store
       auth.login(response.data);
 
-      // Redirigir a dashboard después de login exitoso
       router.push('/dashboard');
     } else {
       errors.value.email = response.data.error;
@@ -218,13 +216,11 @@ onMounted(async () => {
     const result = await getRedirectResult(auth);
 
     if (result) {
-      // El usuario volvió del redirect de Google
       const user = result.user;
       const idToken = await user.getIdToken();
 
       console.log('Token obtenido via redirect:', idToken);
 
-      // Enviar el token a tu backend
       const response = await api.post('/auth/google/firebase', {
         idToken: idToken
       });
@@ -239,7 +235,6 @@ onMounted(async () => {
   }
 });
 
-// ✅ NUEVA función con redirect
 const onGoogleLogin = async () => {
   try {
     loading.value = true;
@@ -256,9 +251,7 @@ const onGoogleLogin = async () => {
       idToken: idToken
     });
 
-    // ✅ MANEJO DEL NUEVO ERROR "USER_NOT_REGISTERED"
     if (response.data.error === "USER_NOT_REGISTERED") {
-      // Obtener el token actual antes de redirigir
       const idToken = await result.user.getIdToken();
 
       router.push({
@@ -266,7 +259,7 @@ const onGoogleLogin = async () => {
         query: {
           googleUser: encodeURIComponent(JSON.stringify(response.data.userData)),
           from: 'google',
-          idToken: idToken // ✅ Pasar el token
+          idToken: idToken 
         }
       });
       return;
@@ -282,7 +275,6 @@ const onGoogleLogin = async () => {
   } catch (error) {
     console.error('Error:', error);
 
-    // ✅ Capturar error de redirección para registro
     if (error.response?.data?.error === "USER_NOT_REGISTERED") {
       router.push({
         path: '/register',
@@ -300,7 +292,6 @@ const onGoogleLogin = async () => {
 };
 
 onMounted(() => {
-  // Verificar si hay errores en la URL
   const error = route.query.error;
   if (error === 'auth_failed') {
     errors.value.email = 'Error en la autenticación con Google. Intenta nuevamente.';

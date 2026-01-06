@@ -227,7 +227,6 @@ import { ref, onMounted, watch } from 'vue'
 const router = useRouter()
 const auth = useAuthStore()
 
-// Estado para el modal de agregar
 const mostrarModalAgregar = ref(false)
 const mostrarModalLibro = ref(false)
 const mostrarModalPelicula = ref(false)
@@ -239,7 +238,6 @@ const modalExitoConfig = ref({
   mensaje: ''
 })
 
-// ✅ Agregar estado reactivo para las estadísticas
 const estadisticas = ref({
   libros: 0,
   peliculas: 0,
@@ -258,7 +256,6 @@ const goToEstadisticas = () => {
   router.push('/estadisticas')
 }
 
-// ✅ Función para obtener estadísticas reales
 const fetchEstadisticas = async () => {
   try {
     loading.value = true
@@ -279,7 +276,6 @@ const fetchEstadisticas = async () => {
 
     const data = await response.json()
 
-    // ✅ Actualizar con datos reales
     estadisticas.value = {
       libros: data.libros || 0,
       peliculas: data.peliculas || 0,
@@ -295,7 +291,6 @@ const fetchEstadisticas = async () => {
   }
 }
 
-// Función para abrir el formulario correspondiente
 const abrirFormularioAgregar = () => {
 
   mostrarModalAgregar.value = false
@@ -315,9 +310,7 @@ const abrirFormularioAgregar = () => {
   tipoSeleccionado.value = ''
 }
 
-// Función para manejar agregado exitoso
 const handleAgregarExitoso = () => {
-  // Configurar mensaje de éxito según el tipo
   switch (true) {
     case mostrarModalLibro.value:
       modalExitoConfig.value = {
@@ -343,10 +336,9 @@ const handleAgregarExitoso = () => {
   }
 
   showModalExito.value = true
-  fetchEstadisticas() // Actualizar estadísticas
+  fetchEstadisticas() 
 }
 
-// ✅ Cargar estadísticas al montar el componente
 onMounted(() => {
   if (auth.isAuthenticated) {
     fetchEstadisticas()

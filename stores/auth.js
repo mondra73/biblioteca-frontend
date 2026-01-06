@@ -7,7 +7,6 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
   const userData = ref(null)
 
-  // Getter para obtener el token
   const token = computed(() => {
     return localStorage.getItem('auth-token')
   })
@@ -42,7 +41,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       localStorage.setItem('auth-token', newToken)
       
-      // Configurar el token en las cabeceras de axios
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`
 
       try {
@@ -69,13 +67,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => {
     localStorage.removeItem('auth-token')
-    // Eliminar el token de las cabeceras de axios
     delete api.defaults.headers.common['Authorization']
     isAuthenticated.value = false
     userData.value = null
   }
 
-  // 🔹 Nueva función para renovar el token
   const refreshAccessToken = async () => {
     try {
       const res = await api.post('/user/refresh-token') 
@@ -90,7 +86,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Verificar autenticación al inicializar
   checkAuth()
 
   return {

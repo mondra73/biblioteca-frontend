@@ -78,20 +78,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue' // ✅ ELIMINAR watch
+import { ref, reactive, computed } from 'vue' 
 import { useAuthStore } from '../../stores/auth'
 
-// ✅ DEFINIR EMITS (esto te faltaba)
 const emit = defineEmits(['close', 'success'])
 
 const authStore = useAuthStore()
 const loadingSubmit = ref(false)
 const formError = ref(null)
 
-// ✅ CONTROLAR LA VISIBILIDAD INTERNAMENTE (como el modal de libros)
 const mostrarModalPelicula = ref(true)
 
-// Datos de la nueva película
 const newMovie = reactive({
   titulo: '',
   director: '',
@@ -100,13 +97,11 @@ const newMovie = reactive({
   descripcion: ''
 })
 
-// Fecha actual para limitar el input de fecha
 const today = computed(() => {
   return new Date().toISOString().split('T')[0]
 })
 
 const closeModal = () => {
-  // ✅ USAR emit PARA CERRAR
   emit('close')
   resetForm()
 }
@@ -125,7 +120,6 @@ const submitMovieForm = async () => {
     loadingSubmit.value = true
     formError.value = null
 
-    // Validaciones básicas
     if (!newMovie.titulo.trim()) {
       throw new Error('El título es requerido')
     }
@@ -138,7 +132,6 @@ const submitMovieForm = async () => {
       throw new Error('La fecha es requerida')
     }
 
-    // Validar que la fecha no sea futura
     const selectedDate = new Date(newMovie.fecha)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -171,7 +164,6 @@ const submitMovieForm = async () => {
       throw new Error(data.mensaje || data.error || 'Error al guardar la película')
     }
 
-    // ✅ USAR emit PARA ÉXITO
     emit('success')
     resetForm()
 

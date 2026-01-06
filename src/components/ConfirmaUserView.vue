@@ -18,7 +18,6 @@
 
     <!-- Estado: Éxito -->
 <div v-else-if="!error" class="max-w-md w-full bg-white rounded-lg shadow-sm overflow-hidden">
-  <!-- Header con color primario -->
   <div class="bg-primary px-6 py-6 text-center">
     <h1 class="text-2xl font-bold text-white">Biblioteca Multimedia</h1>
   </div>
@@ -140,7 +139,6 @@ const confirmAccount = async () => {
       throw new Error(response.data.mensaje);
     }
 
-    // Éxito
     loading.value = false;
     
   } catch (err) {

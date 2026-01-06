@@ -350,7 +350,6 @@ import ModalEditarPendienteView from '../components/ModalEditarPendienteView.vue
 import ModalExitoView from '../components/ModalExitoView.vue'
 import ModalConfirmacion from '../components/ModalConfirmacionView.vue'
 
-// Estado reactivo
 const searchTerm = ref('')
 const selectedType = ref('')
 const showAddModal = ref(false)
@@ -373,10 +372,8 @@ const itemAEliminar = ref(null)
 const showConfirmacionCompletado = ref(false)
 const loadingAction = ref(false)
 
-// Datos de pendientes desde el backend
 const pendientes = ref([])
 
-// Datos del nuevo item
 const newItem = reactive({
   titulo: '',
   tipo: '',
@@ -384,14 +381,12 @@ const newItem = reactive({
   descripcion: ''
 })
 
-// Paginación
 const pagination = reactive({
   currentPage: 1,
   totalPages: 1,
   totalPendientes: 0
 })
 
-// Estadísticas
 const stats = computed(() => {
   const total = pendientes.value.length
   const libros = pendientes.value.filter(item => item.tipo === 'libro').length
@@ -401,7 +396,6 @@ const stats = computed(() => {
   return { total, libros, series, peliculas }
 })
 
-// Items filtrados
 const filteredItems = computed(() => {
   return pendientes.value.filter(item => {
     const matchesSearch = item.titulo.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
@@ -414,7 +408,6 @@ const filteredItems = computed(() => {
 
 let searchTimeout = null
 
-// Métodos
 const fetchPendientes = async (page = 1) => {
   try {
     loading.value = true
@@ -453,7 +446,6 @@ const fetchPendientes = async (page = 1) => {
     error.value = err.message
     console.error('Error fetching pendientes:', err)
 
-    // Manejar errores de autenticación
     if (err.message.includes('denegado') || err.message.includes('token') ||
       err.message.includes('401') || err.message.includes('403')) {
       authStore.logout()
@@ -478,7 +470,6 @@ const performSearch = async (texto) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
-    // Reemplazar espacios con guiones bajos para la URL
     const textoCodificado = texto.replace(/ /g, '_')
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
@@ -492,7 +483,6 @@ const performSearch = async (texto) => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
 
-      // Si no hay resultados, es normal, no es un error
       if (response.status === 404 && errorData.message?.includes('No se encontraron')) {
         pendientes.value = []
         return
@@ -505,7 +495,6 @@ const performSearch = async (texto) => {
     pendientes.value = data
 
   } catch (err) {
-    // No mostrar error si es que no hay resultados
     if (!err.message.includes('No se encontraron')) {
       error.value = err.message
     }
@@ -515,7 +504,6 @@ const performSearch = async (texto) => {
   }
 }
 
-// Funciones auxiliares
 const getGradientClass = (tipo) => {
   const gradients = {
     libro: 'bg-gradient-to-r from-blue-500 to-indigo-600',
@@ -526,7 +514,6 @@ const getGradientClass = (tipo) => {
 }
 
 const getTipoLabel = (tipo) => {
-  // Normalizar el tipo primero
   const normalizedTipo = tipo ? tipo.toLowerCase() : ''
 
   const labels = {
@@ -540,7 +527,6 @@ const getTipoLabel = (tipo) => {
 }
 
 const getAutorDirectorLabel = (tipo) => {
-  // Normalizar el tipo primero
   const normalizedTipo = tipo ? tipo.toLowerCase() : ''
 
   if (normalizedTipo === 'libro') return 'Autor'
@@ -552,7 +538,6 @@ const getAutorDirectorLabel = (tipo) => {
 const getCompletadoText = (tipo, completado) => {
   if (completado) return 'Completado'
 
-  // Normalizar el tipo primero
   const normalizedTipo = tipo ? tipo.toLowerCase() : ''
 
   const textos = {
@@ -564,7 +549,6 @@ const getCompletadoText = (tipo, completado) => {
   return textos[normalizedTipo] || 'Marcar como completado'
 }
 
-// Métodos para mostrar diferentes tipos de éxito
 const mostrarExitoCreacion = () => {
   modalExitoConfig.value = {
     titulo: 'Item agregado',
@@ -589,7 +573,6 @@ const mostrarExitoCompletado = () => {
   showModalExitoView.value = true
 }
 
-// Funciones de acciones
 const openItemDetails = (item) => {
   selectedPendienteId.value = item._id || item.id
 }
@@ -615,14 +598,12 @@ const confirmarMarcarCompletado = async () => {
     loadingAction.value = true
     await moverPendienteACompletado(itemAEliminar.value)
 
-    // ✅ FORZAR ACTUALIZACIÓN DE LA LISTA (importante!)
     await fetchPendientes(currentPage.value)
 
   } catch (err) {
     console.error('Error en confirmarMarcarCompletado:', err)
     error.value = err.message
 
-    // ✅ Si falla, igual refrescar la lista por si acaso
     await fetchPendientes(currentPage.value)
 
   } finally {
@@ -660,7 +641,6 @@ const confirmarEliminacion = async () => {
       throw new Error(errorData.mensaje || errorData.error || 'Error al eliminar el item')
     }
 
-    // Eliminar del estado local
     await fetchPendientes(currentPage.value)
     mostrarExitoEliminacion()
 
@@ -694,7 +674,6 @@ const closeModal = () => {
 
 const mostrarConfirmacionCompletado = (item) => {
 
-  // ✅ Normalizar también por si acaso
   const itemNormalizado = {
     ...item,
     id: item.id || item._id
@@ -704,7 +683,6 @@ const mostrarConfirmacionCompletado = (item) => {
   itemAEliminar.value = itemNormalizado
   showConfirmacionCompletado.value = true
 
-  // Cerrar modal de detalles si está abierto
   if (selectedPendienteId.value) {
     selectedPendienteId.value = null
   }
@@ -732,10 +710,8 @@ const moverPendienteACompletado = async (item) => {
       valuacion: null
     }
 
-    // ✅ NORMALIZAR EL TIPO: convertir a minúscula y manejar variaciones
     let itemType = item.tipo ? item.tipo.toLowerCase() : ''
 
-    // Mapear variaciones a los valores esperados
     if (itemType === 'pelicula' || itemType === 'película') {
       itemType = 'pelicula'
     } else if (itemType === 'serie') {
@@ -743,8 +719,6 @@ const moverPendienteACompletado = async (item) => {
     } else if (itemType === 'libro') {
       itemType = 'libro'
     } else {
-      // Si no reconocemos el tipo, usar 'pelicula' como valor por defecto
-      // o podrías lanzar un error según lo que prefieras
       itemType = 'pelicula'
     }
 
@@ -775,7 +749,6 @@ const moverPendienteACompletado = async (item) => {
       throw new Error(cargaData.mensaje || cargaData.error || 'Error al mover el item')
     }
 
-    // 2. ✅ INTENTAR eliminar de pendientes, pero si falla no es crítico
     try {
       const responseEliminar = await fetch(`${API_BASE}/api/admin/user/pendiente/${itemId}`, {
         method: 'DELETE',
@@ -793,7 +766,6 @@ const moverPendienteACompletado = async (item) => {
       console.warn('⚠️ Error no crítico al eliminar pendiente:', eliminarError)
     }
 
-    // 3. Actualizar la lista local
     pendientes.value = pendientes.value.filter(i => (i.id || i._id) !== itemId)
     mostrarExitoCompletado()
 
@@ -809,7 +781,6 @@ const submitItemForm = async () => {
     loadingSubmit.value = true
     formError.value = null
 
-    // Validaciones básicas
     if (!newItem.titulo.trim()) {
       throw new Error('El título es requerido')
     }
@@ -846,7 +817,6 @@ const submitItemForm = async () => {
 
     mostrarExitoCreacion()
 
-    // Recargar la lista de pendientes
     fetchPendientes(currentPage.value)
 
   } catch (err) {
@@ -884,10 +854,8 @@ const changePage = (newPage) => {
     currentPage.value = newPage
 
     if (isSearching.value && searchTerm.value.trim()) {
-      // Si estamos en modo búsqueda, buscar en la página específica
       performSearch(searchTerm.value.trim(), newPage)
     } else {
-      // Si no, cargar página normal
       fetchPendientes(newPage)
     }
   }
@@ -914,16 +882,13 @@ onMounted(() => {
 })
 
 watch(searchTerm, (newQuery, oldQuery) => {
-  // Esperar 500ms después de que el usuario deje de escribir
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     if (newQuery.trim() !== oldQuery.trim()) {
       if (newQuery.trim() === '') {
-        // Si la búsqueda está vacía, cargar pendientes normales
         fetchPendientes(1)
         isSearching.value = false
       } else {
-        // Si hay texto, realizar búsqueda
         performSearch(newQuery.trim(), 1)
       }
     }
@@ -931,8 +896,7 @@ watch(searchTerm, (newQuery, oldQuery) => {
 })
 
 watch(selectedType, () => {
-  // Cuando cambia el tipo, no necesitamos hacer una nueva petición al servidor
-  // ya que el filtrado se hace localmente con computed properties
+
 })
 
 </script>

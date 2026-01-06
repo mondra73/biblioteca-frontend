@@ -11,7 +11,6 @@
         <div class="relative z-10 w-full max-w-2xl">
             <!-- Card principal -->
             <div class="bg-card border border-border rounded-2xl shadow-lg p-8 md:p-12 text-center">
-                <!-- Número 404 grande -->
                 <div class="mb-8">
                     <h1 class="text-8xl md:text-9xl font-bold text-primary/20 leading-none select-none">
                         404
@@ -38,7 +37,6 @@
 
                 <!-- Botones de acción -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <!-- Botón principal - Volver al inicio -->
                     <button @click="goHome"
                         class="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
                         <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none"
@@ -129,7 +127,6 @@ function performSearch() {
     }
 }
 
-// Cerrar modal con Escape
 function handleKeydown(e) {
     if (e.key === 'Escape') closeSearch();
 }

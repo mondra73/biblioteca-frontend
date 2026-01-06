@@ -143,14 +143,12 @@ const handleSubmit = async () => {
       email: email.value.toLowerCase().trim()
     });
 
-    // Siempre mostramos el mensaje de éxito por seguridad
     emailSent.value = true;
     
   } catch (error) {
     console.error('Error en la petición:', error);
     
     if (error.response?.status === 429) {
-      // Rate limit exceeded
       errors.value.email = error.response.data.error;
     } else if (error.response?.data?.error) {
       errors.value.email = error.response.data.error;
@@ -164,5 +162,5 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* Estilos específicos del componente si son necesarios */
+
 </style>

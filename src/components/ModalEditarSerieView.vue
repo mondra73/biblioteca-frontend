@@ -100,13 +100,11 @@ const authStore = useAuthStore()
 const loading = ref(false)
 const error = ref(null)
 
-// Crear copia editable de la serie
 const serieEditada = reactive({
   ...props.serie,
   fecha: props.serie.fecha ? new Date(props.serie.fecha).toISOString().split('T')[0] : ''
 })
 
-// Fecha actual para limitar el input de fecha
 const today = computed(() => {
   return new Date().toISOString().split('T')[0]
 })

@@ -23,17 +23,14 @@ onMounted(async () => {
 
   if (token) {
     try {
-      // Usar el método del store para hacer login con el token
       authStore.loginWithToken(token);
       
-      // Redirigir al dashboard
       router.push('/dashboard');
     } catch (error) {
       console.error('Error procesando login con Google:', error);
       router.push('/login?error=auth_failed');
     }
   } else {
-    // Si no hay token, verificar si hay un error
     const error = route.query.error;
     if (error) {
       router.push(`/login?error=${error}`);

@@ -1,6 +1,4 @@
 import axios from 'axios'
-
-// URL base para API - usa variable de entorno o default
 const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:3000'
 
 const api = axios.create({
@@ -11,7 +9,6 @@ const api = axios.create({
   },
 })
 
-// 🚀 Función para refrescar el token
 async function refreshAccessToken() {
   try {
     const response = await axios.post(
@@ -62,7 +59,6 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    // 🔄 Si el token expiró (401) y no hemos intentado refrescar aún
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
       const newToken = await refreshAccessToken()
@@ -70,9 +66,8 @@ api.interceptors.response.use(
       if (newToken) {
         originalRequest.headers['Authorization'] = `Bearer ${newToken}`
         originalRequest.headers['auth-token'] = newToken
-        return api(originalRequest) // reintenta con el nuevo token
+        return api(originalRequest) 
       } else {
-        // si no hay refresh, cerrar sesión
         localStorage.removeItem('auth-token')
         window.location.href = '/login?sessionExpired=true'
       }

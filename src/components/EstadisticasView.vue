@@ -213,7 +213,6 @@
 
     <!-- Action Buttons -->
     <section class="relative px-6 py-16">
-      <!-- Fondo degradado -->
       <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 via-primary/5 to-transparent opacity-60 blur-3xl">
       </div>
 
@@ -310,7 +309,6 @@ const loadingPersonal = ref(true)
 const errorRankings = ref(null)
 const errorPersonal = ref(null)
 
-// Estado para el modal de agregar
 const mostrarModalAgregar = ref(false)
 const mostrarModalLibro = ref(false)
 const mostrarModalPelicula = ref(false)
@@ -351,7 +349,6 @@ const categoriaFavorita = computed(() => {
   return 'Series'
 })
 
-// Métodos para fetch datos
 const fetchRankings = async () => {
   try {
     loadingRankings.value = true
@@ -441,9 +438,7 @@ const abrirFormularioAgregar = () => {
   tipoSeleccionado.value = ''
 }
 
-// Función para manejar agregado exitoso
 const handleAgregarExitoso = () => {
-  // Configurar mensaje de éxito según el tipo
   switch (true) {
     case mostrarModalLibro.value:
       modalExitoConfig.value = {
@@ -469,16 +464,14 @@ const handleAgregarExitoso = () => {
   }
 
   showModalExito.value = true
-  fetchEstadisticasPersonales() // Actualizar estadísticas
-  fetchRankings() // Actualizar rankings también
+  fetchEstadisticasPersonales() 
+  fetchRankings() 
 }
 
-// Métodos de navegación
 const goToDashboard = () => {
   router.push('/dashboard')
 }
 
-// Cargar datos al montar el componente
 onMounted(async () => {
   if (authStore.isAuthenticated) {
     await Promise.all([fetchRankings(), fetchEstadisticasPersonales()])

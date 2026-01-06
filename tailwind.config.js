@@ -3,7 +3,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
-    "./views/**/*.{vue,js,ts,jsx,tsx}" // ← AÑADE ESTA LÍNEA
+    "./views/**/*.{vue,js,ts,jsx,tsx}" 
   ],
   theme: {
     extend: {

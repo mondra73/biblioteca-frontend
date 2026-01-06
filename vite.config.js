@@ -5,7 +5,6 @@ import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
 
 export default defineConfig(({ mode }) => {
-  // Cargar variables de entorno
   const env = loadEnv(mode, process.cwd(), '')
 
   const isProduction = mode === 'production'
@@ -36,7 +35,6 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    // Definir variable global para el frontend
     define: {
       'import.meta.env.VITE_API_BASE': JSON.stringify(apiTarget),
     },

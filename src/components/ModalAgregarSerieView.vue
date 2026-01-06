@@ -1,5 +1,4 @@
 <template>
-  <!-- CAMBIAR: usar mostrarModalSerie en lugar de props.showModal -->
   <div v-if="mostrarModalSerie" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-lg p-6 w-full max-w-md">
       <h2 class="text-xl font-bold mb-4">Agregar Nueva Serie</h2>
@@ -82,17 +81,14 @@
 import { ref, reactive, computed } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 
-// ✅ DEFINIR EMITS (igual que en películas)
 const emit = defineEmits(['close', 'success'])
 
 const authStore = useAuthStore()
 const loadingSubmit = ref(false)
 const formError = ref(null)
 
-// ✅ CONTROLAR LA VISIBILIDAD INTERNAMENTE (igual que en películas)
 const mostrarModalSerie = ref(true)
 
-// Datos de la nueva serie
 const newSerie = reactive({
   titulo: '',
   director: '',
@@ -101,13 +97,11 @@ const newSerie = reactive({
   descripcion: ''
 })
 
-// Fecha actual para limitar el input de fecha
 const today = computed(() => {
   return new Date().toISOString().split('T')[0]
 })
 
 const closeModal = () => {
-  // ✅ USAR emit PARA CERRAR (igual que en películas)
   emit('close')
   resetForm()
 }
@@ -126,7 +120,6 @@ const submitSerieForm = async () => {
     loadingSubmit.value = true
     formError.value = null
 
-    // Validaciones básicas
     if (!newSerie.titulo.trim()) {
       throw new Error('El título es requerido')
     }
@@ -139,7 +132,6 @@ const submitSerieForm = async () => {
       throw new Error('La fecha es requerida')
     }
 
-    // Validar que la fecha no sea futura
     const selectedDate = new Date(newSerie.fecha)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -172,7 +164,6 @@ const submitSerieForm = async () => {
       throw new Error(data.mensaje || data.error || 'Error al guardar la serie')
     }
 
-    // ✅ USAR emit PARA ÉXITO (igual que en películas)
     emit('success')
     resetForm()
 

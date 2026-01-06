@@ -255,7 +255,6 @@
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 
-// Estado reactivo
 const searchQuery = ref('')
 const showAddMovieModal = ref(false)
 const showModalExitoView = ref(false)
@@ -271,10 +270,8 @@ const selectedMovieId = ref(null)
 const peliculaAEditar = ref(null)
 const isSearching = ref(false)
 
-// Datos de películas desde el backend
 const movies = ref([])
 
-// Función para decodificar el token JWT y obtener el ID del usuario
 const getUserIdFromToken = () => {
   try {
     const token = authStore.token
@@ -282,17 +279,14 @@ const getUserIdFromToken = () => {
       throw new Error('No hay token disponible')
     }
 
-    // El token JWT tiene el formato: header.payload.signature
     const payloadBase64 = token.split('.')[1]
     if (!payloadBase64) {
       throw new Error('Token con formato inválido')
     }
 
-    // Decodificar la parte payload del token
     const payloadJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'))
     const payload = JSON.parse(payloadJson)
 
-    // Verificar que el payload contiene el ID
     if (!payload.id) {
       throw new Error('Token no contiene ID de usuario')
     }
@@ -311,14 +305,12 @@ const handlePeliculaAgregada = () => {
   fetchRealStats()
 }
 
-// Paginación
 const pagination = reactive({
   currentPage: 1,
   totalPages: 1,
   totalPeliculas: 0
 })
 
-// Estadísticas
 const stats = reactive({
   totalWatched: 0,
   thisMonth: 0,
@@ -335,12 +327,10 @@ const fetchRealStats = async () => {
       return
     }
 
-    // Obtener el ID del usuario desde el token
     const userId = getUserIdFromToken()
 
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
-    // MODIFICADO: Usar el nuevo endpoint con el ID del usuario
     const response = await fetch(`${API_BASE}/api/admin/user/estadisticas-peliculas/${userId}`, {
       headers: {
         'auth-token': token,
@@ -354,24 +344,20 @@ const fetchRealStats = async () => {
 
     const data = await response.json()
 
-    // Actualizar el total real de películas y el promedio real
     stats.totalRealPeliculas = data.totalPeliculas
     stats.averageRatingReal = data.promedioRating || null
 
   } catch (err) {
     console.error('Error fetching real stats:', err)
-    // No mostramos error al usuario para no interrumpir la experiencia
   }
 }
 
-// Computed: Filtrar películas según búsqueda
 const filteredMovies = computed(() => {
   return movies.value
 })
 
 let searchTimeout = null
 
-// Métodos
 const performSearch = async (texto, page = 1) => {
   try {
     loading.value = true
@@ -384,7 +370,6 @@ const performSearch = async (texto, page = 1) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
-    // Reemplazar espacios con guiones bajos para la URL
     const textoCodificado = texto.replace(/ /g, '_')
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
@@ -398,7 +383,6 @@ const performSearch = async (texto, page = 1) => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
 
-      // Si no hay resultados, es normal, no es un error
       if (response.status === 404 && errorData.mensaje?.includes('No se encontraron')) {
         movies.value = []
         pagination.totalPeliculas = 0
@@ -421,7 +405,6 @@ const performSearch = async (texto, page = 1) => {
     calculateStats(data.peliculas)
 
   } catch (err) {
-    // No mostrar error si es que no hay resultados
     if (!err.message.includes('No se encontraron')) {
       error.value = err.message
     }
@@ -477,7 +460,6 @@ const fetchMovies = async (page = 1) => {
 
     calculateStats(data.peliculas)
 
-    // Obtener estadísticas reales después de cargar las películas
     await fetchRealStats()
 
   } catch (err) {
@@ -505,7 +487,6 @@ const abrirEdicion = (pelicula) => {
   selectedMovieId.value = null
 }
 
-// Métodos para mostrar diferentes tipos de éxito
 const mostrarExitoCreacion = () => {
   modalExitoConfig.value = {
     titulo: 'Película agregada',
@@ -545,10 +526,8 @@ const handlePeliculaEliminada = (peliculaId) => {
 }
 
 const calculateStats = (peliculas) => {
-  // Total de películas vistas (solo las de esta página)
   stats.totalWatched = peliculas.length
 
-  // Películas vistas este mes (solo las de esta página)
   const currentMonth = new Date().getMonth()
   const currentYear = new Date().getFullYear()
   stats.thisMonth = peliculas.filter(movie => {
@@ -556,8 +535,6 @@ const calculateStats = (peliculas) => {
     return movieDate.getMonth() === currentMonth && movieDate.getFullYear() === currentYear
   }).length
 
-  // Promedio de rating (solo películas con valoración de esta página)
-  // Este valor se muestra solo si no tenemos el promedio real
   const peliculasConRating = peliculas.filter(movie => movie.valuacion !== null && movie.valuacion !== undefined)
   if (peliculasConRating.length > 0) {
     const totalRating = peliculasConRating.reduce((sum, movie) => sum + movie.valuacion, 0)
@@ -577,7 +554,6 @@ const formatDate = (dateString) => {
 }
 
 const getMovieGradient = (movie) => {
-  // Asignar gradientes basados en el título para consistencia
   const gradients = [
     'from-red-500 to-orange-600',
     'from-blue-500 to-cyan-600',
@@ -587,7 +563,6 @@ const getMovieGradient = (movie) => {
     'from-yellow-500 to-red-600'
   ]
 
-  // Crear un hash simple basado en el título para asignar colores consistentes
   let hash = 0
   for (let i = 0; i < movie.titulo.length; i++) {
     hash = movie.titulo.charCodeAt(i) + ((hash << 5) - hash)
@@ -598,7 +573,6 @@ const getMovieGradient = (movie) => {
 
 const openMovieMenu = (movie) => {
   console.log('Abrir menú para:', movie.titulo)
-  // Aquí podrías mostrar un menú contextual con opciones
 }
 
 const changePage = (newPage) => {
@@ -606,10 +580,8 @@ const changePage = (newPage) => {
     currentPage.value = newPage
 
     if (isSearching.value && searchQuery.value.trim()) {
-      // Si estamos en modo búsqueda, buscar en la página específica
       performSearch(searchQuery.value.trim(), newPage)
     } else {
-      // Si no, cargar página normal
       fetchMovies(newPage)
     }
   }
@@ -631,15 +603,12 @@ onMounted(() => {
 })
 
 watch(searchQuery, (newQuery, oldQuery) => {
-  // Esperar 500ms después de que el usuario deje de escribir
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     if (newQuery.trim() !== oldQuery.trim()) {
       if (newQuery.trim() === '') {
-        // Si la búsqueda está vacía, cargar películas normales
         fetchMovies(1)
       } else {
-        // Si hay texto, realizar búsqueda
         performSearch(newQuery.trim(), 1)
       }
     }

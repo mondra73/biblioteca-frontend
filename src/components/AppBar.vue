@@ -4,7 +4,6 @@
     <div class="container mx-auto px-6 py-3">
       <div class="flex items-center justify-between">
 
-        <!-- Logo con efecto hover mejorado -->
         <router-link to="/" class="flex items-center group">
           <div class="relative">
             <img src="../../public/portada1.png" alt="Logo"
@@ -51,7 +50,6 @@
 
         <!-- Navegación Desktop - Usuario autenticado -->
         <nav v-else class="hidden md:flex items-center gap-6">
-          <!-- Saludo personalizado -->
           <div
             class="flex items-center gap-3 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-2 rounded-full border border-gray-200">
             <div
@@ -126,7 +124,6 @@
             </div>
           </router-link>
 
-          <!-- Botón de logout mejorado -->
           <button @click="handleLogout"
             class="relative bg-gradient-to-r from-gray-600 to-gray-700 text-white px-4 py-2.5 rounded-full font-medium hover:from-gray-700 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group cursor-pointer">
             <span class="flex items-center gap-2">
@@ -291,7 +288,6 @@ const instalarApp = async () => {
   }
 
   try {
-    // Mostrar el prompt de instalación
     const result = await deferredPrompt.value.prompt()
     console.log('📱 Usuario respondió:', result)
 
@@ -304,7 +300,6 @@ const instalarApp = async () => {
   } catch (error) {
     console.error('💥 Error al instalar:', error)
   } finally {
-    // Limpiar para futuras instalaciones
     deferredPrompt.value = null
     showInstallButton.value = false
   }
@@ -313,13 +308,10 @@ const instalarApp = async () => {
 const handleBeforeInstallPrompt = (e) => {
   console.log('🎯 Evento beforeinstallprompt capturado', e)
 
-  // Guardar el evento para usarlo después
   deferredPrompt.value = e
 
-  // Prevenir que Chrome muestre su banner automático
   e.preventDefault()
 
-  // Mostrar TU botón personalizado
   showInstallButton.value = true
   console.log('✅ Botón de instalación activado')
 }
@@ -329,7 +321,6 @@ onMounted(() => {
   window.addEventListener('storage', handleStorageChange)
   window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
 
-  // ✅ VERIFICAR SI LA APP YA ESTÁ INSTALADA
   const isAppInstalled = window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true ||
     document.referrer.includes('android-app://')
@@ -340,19 +331,16 @@ onMounted(() => {
     deferredPrompt.value = null
   }
 
-  // ✅ AGREGAR ESTO - Forzar verificación después de 3 segundos
   setTimeout(() => {
     if (!deferredPrompt.value) {
       console.log('🔍 Buscando evento beforeinstallprompt manualmente...')
 
-      // Disparar manualmente la verificación
       const event = new Event('beforeinstallprompt', {
         bubbles: true,
         cancelable: true
       })
       window.dispatchEvent(event)
 
-      // Alternativa: verificar si ya está disponible
       if (window.deferredPrompt) {
         deferredPrompt.value = window.deferredPrompt
         showInstallButton.value = true

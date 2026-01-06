@@ -1,9 +1,9 @@
-const CACHE_NAME = 'biblioteca-cache-v3' // ✅ Incrementé la versión
+const CACHE_NAME = 'biblioteca-cache-v3' 
 
 // Estrategia de cache dinámico
 self.addEventListener('install', () => {
   console.log('🔄 Service Worker instalado - saltando espera')
-  self.skipWaiting() // ✅ Fuerza la activación inmediata
+  self.skipWaiting() 
 })
 
 self.addEventListener('activate', (event) => {
@@ -24,7 +24,7 @@ self.addEventListener('activate', (event) => {
       })
       .then(() => {
         console.log('✅ Caches limpiados - tomando control de clientes')
-        return self.clients.claim() // ✅ Toma control inmediato de todas las pestañas
+        return self.clients.claim() 
       }),
   )
 })
@@ -33,17 +33,16 @@ self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
 
-  // ✅ NO CACHEAR ICONOS - siempre servirlos frescos
+
   if (
     url.pathname.includes('portada1.png') ||
     url.pathname.includes('icon') ||
     url.pathname.includes('favicon')
   ) {
     console.log('🔄 Sirviendo icono fresco (no cachear):', request.url)
-    return fetch(request) // ← Servir siempre fresco, sin cache
+    return fetch(request) 
   }
 
-  // ✅ IGNORAR extensiones de Chrome y otros esquemas
   if (
     request.method !== 'GET' ||
     !request.url.startsWith('http') ||
@@ -55,10 +54,10 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      // ✅ ESTRATEGIA: Network First para todo
+
       return fetch(request)
         .then((networkResponse) => {
-          // Cachear solo si es successful y NO es un icono
+
           if (networkResponse.status === 200 && !request.url.includes('portada1.png')) {
             const responseToCache = networkResponse.clone()
             caches.open(CACHE_NAME).then((cache) => {
@@ -68,7 +67,7 @@ self.addEventListener('fetch', (event) => {
           return networkResponse
         })
         .catch((error) => {
-          // Fallback al cache solo si no es un icono
+
           if (cachedResponse && !request.url.includes('portada1.png')) {
             return cachedResponse
           }
@@ -78,7 +77,7 @@ self.addEventListener('fetch', (event) => {
   )
 })
 
-// ✅ ESCUCHAR MENSAJES PARA ACTUALIZACIONES
+
 self.addEventListener('message', (event) => {
   if (event.data === 'skipWaiting') {
     console.log('🎯 Recibido mensaje skipWaiting')
@@ -86,7 +85,7 @@ self.addEventListener('message', (event) => {
   }
 })
 
-// ✅ ESCUCHAR SYNC PARA BACKGROUND SYNC
+
 self.addEventListener('sync', (event) => {
   if (event.tag === 'background-sync') {
     console.log('🔄 Background sync triggered')
@@ -94,7 +93,6 @@ self.addEventListener('sync', (event) => {
   }
 })
 
-// ✅ Función ejemplo para background sync
 function doBackgroundSync() {
   return new Promise((resolve) => {
     console.log('🔄 Sincronizando en background...')

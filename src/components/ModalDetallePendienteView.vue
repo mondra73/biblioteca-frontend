@@ -27,7 +27,6 @@
       </div>
 
       <div v-else-if="pendiente" class="space-y-6">
-        <!-- Portada y info básica -->
         <div class="flex flex-col md:flex-row gap-6">
           <!-- Portada con color según tipo -->
           <div class="w-32 h-40 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -141,7 +140,6 @@ const error = ref(null)
 const showConfirmacionEliminar = ref(false)
 
 const getPortadaClass = (tipo) => {
-  // Normalizar el tipo primero
   const normalizedTipo = tipo ? tipo.toLowerCase() : ''
 
   const classes = {
@@ -154,7 +152,6 @@ const getPortadaClass = (tipo) => {
 }
 
 const getAutorDirectorLabel = (tipo) => {
-  // Normalizar el tipo primero
   const normalizedTipo = tipo ? tipo.toLowerCase() : ''
 
   if (normalizedTipo === 'libro') return 'Autor'
@@ -164,7 +161,6 @@ const getAutorDirectorLabel = (tipo) => {
 }
 
 const getTipoLabel = (tipo) => {
-  // Normalizar el tipo primero
   const normalizedTipo = tipo ? tipo.toLowerCase() : ''
 
   const labels = {
@@ -245,7 +241,6 @@ const cancelarEliminacion = () => {
 
 const marcarComoCompletado = () => {
   if (!pendiente.value?.confirma) {
-    // ✅ Normalizar el tipo antes de enviar
     const pendienteNormalizado = {
       ...pendiente.value,
       id: pendiente.value.id || pendiente.value._id,

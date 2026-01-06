@@ -43,7 +43,6 @@ router.beforeEach((to, from, next) => {
     // Redirigir al login si la ruta requiere autenticación y el usuario no está autenticado
     next('/login')
   } else {
-    // Continuar con la navegación
     next()
   }
 })

@@ -12,7 +12,7 @@
             </a>
             <h1 class="text-2xl font-bold text-gray-900">Mis Libros</h1>
           </div>
-          <!-- Cambia el botón para usar el modal importado -->
+
           <button @click="mostrarModalAgregar = true"
             class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,6 @@
               </div>
               <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600">Total Leídos</p>
-                <!-- Mostrar el total real de libros en lugar del paginado -->
                 <p class="text-2xl font-semibold text-gray-900">{{ stats.totalRealLibros || stats.totalRead }}</p>
               </div>
             </div>
@@ -199,7 +198,6 @@
           <h3 class="mt-2 text-sm font-medium text-gray-900">No hay libros</h3>
           <p class="mt-1 text-sm text-gray-500">Comienza agregando tu primer libro leído.</p>
           <div class="mt-6">
-            <!-- Cambia este botón también -->
             <button @click="mostrarModalAgregar = true"
               class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
               <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +252,6 @@
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 
-// Estado reactivo (sin cambios en esta parte)
 const searchQuery = ref('')
 const mostrarModalAgregar = ref(false)
 const showModalExitoView = ref(false)
@@ -270,10 +267,8 @@ const selectedBookId = ref(null)
 const libroAEditar = ref(null)
 const isSearching = ref(false)
 
-// Datos de libros desde el backend
 const books = ref([])
 
-// Función para decodificar el token JWT y obtener el ID del usuario
 const getUserIdFromToken = () => {
   try {
     const token = authStore.token
@@ -281,17 +276,14 @@ const getUserIdFromToken = () => {
       throw new Error('No hay token disponible')
     }
 
-    // El token JWT tiene el formato: header.payload.signature
     const payloadBase64 = token.split('.')[1]
     if (!payloadBase64) {
       throw new Error('Token con formato inválido')
     }
 
-    // Decodificar la parte payload del token
     const payloadJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'))
     const payload = JSON.parse(payloadJson)
 
-    // Verificar que el payload contiene el ID
     if (!payload.id) {
       throw new Error('Token no contiene ID de usuario')
     }
@@ -307,17 +299,15 @@ const handleLibroAgregado = () => {
   mostrarModalAgregar.value = false
   mostrarExitoCreacion()
   fetchBooks(currentPage.value)
-  fetchRealStats() // Llamar a fetchRealStats después de agregar un libro
+  fetchRealStats()
 }
 
-// Paginación
 const pagination = reactive({
   currentPage: 1,
   totalPages: 1,
   totalLibros: 0
 })
 
-// Estadísticas
 const stats = reactive({
   totalRead: 0,
   thisMonth: 0,
@@ -325,18 +315,15 @@ const stats = reactive({
   totalRealLibros: 0
 })
 
-// Función para obtener estadísticas reales - MODIFICADA
 const fetchRealStats = async () => {
   try {
     const token = authStore.token
     if (!token) return
 
-    // Obtener el ID del usuario desde el token
     const userId = getUserIdFromToken()
 
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
-    // MODIFICADO: Usar el nuevo endpoint con el ID del usuario
     const response = await fetch(`${API_BASE}/api/admin/user/estadisticas-libros/${userId}`, {
       headers: {
         'auth-token': token,
@@ -348,7 +335,6 @@ const fetchRealStats = async () => {
 
     const data = await response.json()
 
-    // Actualizar ambos valores desde el endpoint
     stats.totalRealLibros = data.totalLibros
     stats.averageRating = data.promedioRating || '0.0'
 
@@ -357,14 +343,12 @@ const fetchRealStats = async () => {
   }
 }
 
-// Computed: Filtrar libros según búsqueda
 const filteredBooks = computed(() => {
   return books.value
 })
 
 let searchTimeout = null
 
-// Métodos
 const performSearch = async (texto, page = 1) => {
   try {
     loading.value = true
@@ -377,7 +361,6 @@ const performSearch = async (texto, page = 1) => {
       throw new Error('No hay token de autenticación disponible')
     }
 
-    // Reemplazar espacios con guiones bajos para la URL
     const textoCodificado = texto.replace(/ /g, '_')
     const API_BASE = import.meta.env.VITE_API_BASE || ''
 
@@ -488,7 +471,6 @@ const fetchBooks = async (page = 1) => {
   }
 }
 
-// Resto de las funciones permanecen iguales...
 const openBookDetails = (book) => {
   selectedBookId.value = book.id
 }

@@ -252,22 +252,19 @@ const submitForm = async () => {
 
     if (data.success) {
       successModal.value = true;
-      // Limpiar formulario
       form.nombre = '';
       form.email = '';
       form.telefono = '';
       form.asunto = '';
       form.mensaje = '';
 
-      // Guardar timestamp del último envío exitoso
       localStorage.setItem('lastContactSubmit', Date.now().toString());
     } else {
       errorMessage.value = data.message || 'Error al enviar el mensaje';
       errorModal.value = true;
 
-      // Si es error 429 (rate limit), iniciar contador
       if (response.status === 429) {
-        startCooldown(5 * 60); // 5 minutos en segundos
+        startCooldown(5 * 60); 
       }
     }
   } catch (error) {
@@ -279,7 +276,6 @@ const submitForm = async () => {
   }
 };
 
-// Limitar caracteres a 500
 watch(
   () => form.mensaje,
   (newVal) => {

@@ -281,7 +281,6 @@ const onSubmit = async () => {
 
   let hasErrors = false;
 
-  // Validaciones
   const nameError = validateName(name.value);
   if (nameError) {
     errors.value.name = nameError;
@@ -318,7 +317,6 @@ const onSubmit = async () => {
       password2: confirmPassword.value
     };
 
-    // ✅ SI VIENE DE GOOGLE, agregar datos adicionales
     const googleUser = route.query.googleUser;
     if (googleUser) {
       const userData = JSON.parse(decodeURIComponent(googleUser));
@@ -368,7 +366,6 @@ onMounted(() => {
 
       console.log('Usuario de Google detectado. Registrando automáticamente...');
 
-      // ✅ Pasar el token a la función
       setTimeout(() => {
         onSubmitAutoRegister(userData);
       }, 1000);
@@ -381,7 +378,6 @@ onMounted(() => {
   document.addEventListener('keydown', handleEscapeKey);
 });
 
-// ✅ NUEVA función para registro automático
 const onSubmitAutoRegister = async (userData) => {
   loading.value = true;
 
@@ -396,11 +392,9 @@ const onSubmitAutoRegister = async (userData) => {
       avatar: userData.avatar
     };
 
-    // 1. Primero registrar el usuario
     const registerResponse = await api.post('/auth/register', payload);
 
     if (registerResponse.data.error === null) {
-      // 2. Usar el token que viene por query para login
       const idToken = route.query.idToken;
 
       if (idToken) {

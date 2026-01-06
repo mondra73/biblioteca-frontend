@@ -28,7 +28,6 @@
       </div>
 
       <div v-else-if="pelicula" class="space-y-6">
-        <!-- Portada y info básica -->
         <div class="flex flex-col md:flex-row gap-6">
           <!-- Portada -->
           <div

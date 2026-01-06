@@ -94,7 +94,6 @@ const authStore = useAuthStore()
 const loadingSubmit = ref(false)
 const formError = ref(null)
 
-// Datos del nuevo libro
 const newBook = reactive({
   titulo: '',
   autor: '',
@@ -104,7 +103,6 @@ const newBook = reactive({
   descripcion: ''
 })
 
-// Fecha actual para limitar el input de fecha
 const today = computed(() => {
   return new Date().toISOString().split('T')[0]
 })
@@ -114,7 +112,6 @@ const submitBookForm = async () => {
     loadingSubmit.value = true
     formError.value = null
 
-    // Validaciones básicas
     if (!newBook.titulo.trim()) {
       throw new Error('El título es requerido')
     }
@@ -127,7 +124,6 @@ const submitBookForm = async () => {
       throw new Error('La fecha es requerida')
     }
 
-    // Validar que la fecha no sea futura
     const selectedDate = new Date(newBook.fecha)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -161,7 +157,6 @@ const submitBookForm = async () => {
       throw new Error(data.mensaje || data.error || 'Error al guardar el libro')
     }
 
-    // Éxito - emitir evento y resetear formulario
     emit('success')
     resetForm()
 
