@@ -31,3 +31,10 @@ It is a real-world application actively used by multiple users and designed with
 - JWT tokens are decoded client-side to manage user sessions
 - Route guards prevent access to protected views
 - API layer is centralized for easier maintenance and scalability
+
+
+## Backend
+
+This frontend consumes a Node.js + Express REST API.
+The backend repository is available separately.
+
