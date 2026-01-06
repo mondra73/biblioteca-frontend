@@ -1,35 +1,33 @@
-# app
+## Project overview
 
-This template should help get you started developing with Vue 3 in Vite.
+This frontend application is the client-side interface for a personal media tracking platform that allows users to manage books, movies, and TV series they have consumed or plan to consume.
 
-## Recommended IDE Setup
+It is a real-world application actively used by multiple users and designed with a focus on clarity, performance, and maintainability.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Key features
 
-## Customize configuration
+- User authentication with JWT
+- Google Sign-In integration using Firebase
+- Protected routes based on authentication state
+- Centralized state management with Pinia
+- REST API consumption via Axios
+- User-specific dashboards and rankings
+- Responsive UI built with Tailwind CSS
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Technical stack
 
-## Project Setup
+- **Vue 3** with Composition API
+- **Vite** for fast development and optimized builds
+- **Vue Router** for client-side routing
+- **Pinia** for global state management
+- **Axios** for API communication
+- **Firebase SDK** for Google authentication
+- **Tailwind CSS** for styling
+- **ESLint + Prettier** for code quality and formatting
 
-```sh
-npm install
-```
+## Architecture notes
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+- Authentication state is handled globally using Pinia
+- JWT tokens are decoded client-side to manage user sessions
+- Route guards prevent access to protected views
+- API layer is centralized for easier maintenance and scalability
