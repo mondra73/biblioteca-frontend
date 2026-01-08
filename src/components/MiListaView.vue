@@ -165,9 +165,10 @@
         <!-- Lista Grid -->
         <div v-if="filteredItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <!-- Items de la lista -->
-          <div v-for="item in filteredItems" :key="item.id" :data-tipo="item.tipo"
+          <div v-for="item in filteredItems" :key="item._id"
             class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
             :class="{ 'opacity-60': item.confirma }" @click="openItemDetails(item)">
+
             <div class="h-32 relative" :class="getGradientClass(item.tipo)">
               <div class="absolute top-4 left-4">
                 <span class="bg-white/20 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
@@ -574,7 +575,7 @@ const mostrarExitoCompletado = () => {
 }
 
 const openItemDetails = (item) => {
-  selectedPendienteId.value = item._id || item.id
+  selectedPendienteId.value = item._id
 }
 
 const abrirEdicion = (pendiente) => {
@@ -854,7 +855,7 @@ const changePage = (newPage) => {
     currentPage.value = newPage
 
     if (isSearching.value && searchTerm.value.trim()) {
-      performSearch(searchTerm.value.trim(), newPage)
+      performSearch(searchTerm.value.trim())
     } else {
       fetchPendientes(newPage)
     }
@@ -895,9 +896,6 @@ watch(searchTerm, (newQuery, oldQuery) => {
   }, 500)
 })
 
-watch(selectedType, () => {
-
-})
 
 </script>
 
