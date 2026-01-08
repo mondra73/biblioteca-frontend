@@ -344,7 +344,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted, watch } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import ModalDetallePendienteView from '../components/ModalDetallePendienteView.vue'
 import ModalEditarPendienteView from '../components/ModalEditarPendienteView.vue'
@@ -406,8 +406,6 @@ const filteredItems = computed(() => {
     return matchesSearch && matchesType
   })
 })
-
-let searchTimeout = null
 
 const fetchPendientes = async (page = 1) => {
   try {
@@ -880,20 +878,6 @@ onMounted(() => {
   } else {
     error.value = 'No estás autenticado. Por favor inicia sesión.'
   }
-})
-
-watch(searchTerm, (newQuery, oldQuery) => {
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    if (newQuery.trim() !== oldQuery.trim()) {
-      if (newQuery.trim() === '') {
-        fetchPendientes(1)
-        isSearching.value = false
-      } else {
-        performSearch(newQuery.trim(), 1)
-      }
-    }
-  }, 500)
 })
 
 
